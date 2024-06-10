@@ -1,13 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, User
 # Create your models here.
-#MODELO ROLES DE USUARIO
-class Rol(models.Model):
-    cod_rol = models.IntegerField(primary_key=True, unique=True)
-    rol = models.CharField(max_length=50)
-    def __str__(self):
-        return self.rol
-
 
 # Definir un UserManager personalizado
 class CustomUserManager(BaseUserManager):
@@ -27,13 +20,13 @@ class CustomUserManager(BaseUserManager):
 
 #MODELO USUARIO
 class Usuario(AbstractBaseUser, PermissionsMixin):
-    correo = models.CharField(max_length=50, unique=True, primary_key=True)
-    nombres = models.CharField(max_length=50)
-    apellidos = models.CharField(max_length=50)
-    telefono = models.IntegerField(null=False)
-    direccion = models.CharField(max_length=50, blank=True, null=True)
-    password = models.CharField(max_length=128)
-    cod_rol = models.ForeignKey('Rol', on_delete=models.SET_NULL, null=True)
+    correo = models.CharField(max_length=255, unique=True, primary_key=True)
+    nombres = models.CharField(max_length=155)
+    apellidos = models.CharField(max_length=255)
+    telefono = models.IntegerField(unique=True)
+    direccion = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -53,16 +46,16 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'correo'
-    REQUIRED_FIELDS = ['nombres', 'apellidos']
+    REQUIRED_FIELDS = ['nombres', 'apellidos','telefono']
 
     def __str__(self):
         return self.correo
     
 #MODELO PRODUCTO CERVEZAS
 class Producto(models.Model):
-    cod_producto = models.IntegerField(primary_key=True, unique=True)
+    cod_producto = models.AutoField(primary_key=True, unique=True)
     nombre_producto = models.CharField(max_length=50)
-    descripcion_producto = models.CharField(max_length=50)
+    descripcion_producto = models.CharField(max_length=255)
     precio_producto = models.IntegerField()
     stock_producto = models.IntegerField()
     grado_alcoholico = models.FloatField()
@@ -70,18 +63,21 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre_producto
     
-#MODELO DETALLE PEDIDO
-class Detalle_Pedido(models.Model):
-    cod_pedido = models.IntegerField(primary_key=True, unique=True)
-    precio_unitario = models.IntegerField()
-    cantidad = models.IntegerField()
-    descuento = models.FloatField()
-    cod_producto = models.ForeignKey(Producto, on_delete= models.CASCADE)
-
 #MODELO PEDIDOS
 class Pedido(models.Model):
-    cod_pedido = models.IntegerField(primary_key=True, unique=True)
+    cod_pedido = models.AutoField(primary_key=True)
     correo = models.ForeignKey(Usuario, on_delete= models.CASCADE)
     fecha_pedido = models.DateField()
     fecha_entrega = models.DateField(null=True,blank=True)
     
+# MODELO DETALLE PEDIDO
+class Detalle_Pedido(models.Model):
+    id_detalle_pedido = models.AutoField(primary_key=True)  # Clave primaria autoincremental para cada detalle
+    cod_pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='detalles')  # Clave foránea a Pedido
+    cod_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)  # Clave foránea a Producto
+    precio_unitario = models.IntegerField()
+    cantidad = models.IntegerField()
+    descuento = models.FloatField()
+
+    def __str__(self):
+        return f"Detalle del pedido {self.cod_pedido} para el producto {self.cod_producto}"

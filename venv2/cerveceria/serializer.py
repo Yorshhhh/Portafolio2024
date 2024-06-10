@@ -1,32 +1,31 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import Usuario,Producto,Rol,Detalle_Pedido,Pedido
+from .models import Usuario,Producto,Detalle_Pedido,Pedido
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Usuario
         fields = '__all__'
         extra_kwargs = {
-            'password': {'write_only': True}  # Esto asegura que la contraseña no se devuelva en las respuestas.
+            'password': {'write_only': True}
         }
     def create(self, validated_data):
         # Extraemos la contraseña de los datos validados
         password = validated_data.pop('password')
-        # Asignamos por defecto el rol con código 1
-        rol_default, _ = Rol.objects.get_or_create(pk=1)
-        validated_data['cod_rol'] = rol_default
 
         # Creamos una instancia del modelo Usuario con los datos restantes
         usuario = Usuario(**validated_data)
+
         # Encriptamos la contraseña
         usuario.password = make_password(password)
+
         # Guardamos el usuario en la base de datos
         usuario.save()
         # Devolvemos la instancia del usuario
         return usuario
     
-"""     def validate(self,data):
+    def validate(self,data):
         correo = data.get('correo')
         password = data.get('password')
 
@@ -38,7 +37,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
         # Agregar el usuario autenticado al contexto para su uso en las vistas
         self.context['user'] = user
         return data
-     """
 
 class CustomAuthTokenSerializer(serializers.Serializer):
     correo = serializers.CharField()
@@ -69,17 +67,39 @@ class ProductoSerializer(serializers.ModelSerializer):
         model = Producto
         fields = '__all__'
 
-class RolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rol
-        fields = '__all__'
-
 class Detalle_PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Detalle_Pedido
         fields = '__all__'
 
+    def validate(self, data):
+        producto = data['cod_producto']
+        cantidad_solicitada = data['cantidad']
+
+        # Verificar si hay suficiente stock
+        if producto.stock_producto < cantidad_solicitada:
+            raise serializers.ValidationError(f"No hay suficiente stock para el producto {producto.nombre_producto}. Disponible: {producto.stock_producto}, solicitado: {cantidad_solicitada}.")
+
+        return data
+
+    def create(self, validated_data):
+        producto = validated_data['cod_producto']
+        cantidad_solicitada = validated_data['cantidad']
+
+        # Reducir el stock del producto
+        producto.stock_producto -= cantidad_solicitada
+        producto.save()
+
+        return super().create(validated_data)
+
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = '__all__'
+
+    # Ejemplo de validación adicional
+    def validate_fecha_entrega(self, value):
+        if value and value < Pedido['fecha_pedido']:
+            raise serializers.ValidationError("La fecha de entrega no puede ser anterior a la fecha del pedido.")
+        return value
+    

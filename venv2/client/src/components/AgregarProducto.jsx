@@ -41,7 +41,6 @@ export default function AgregarProducto() {
             console.log('Producto:', producto);
             // También puedes reiniciar el estado del formulario después de enviar los datos
             setProducto({
-                cod_producto: '',
                 nombre_producto: '',
                 descripcion_producto: '',
                 precio_producto: 0,
@@ -64,10 +63,6 @@ export default function AgregarProducto() {
             <div style={styles.container}>
                 <h1 style={styles.title}>Agregar Producto</h1>
                 <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.formGroup}>
-                        <label htmlFor="cod_producto" style={styles.label}>Código Producto:</label>
-                        <input type="text" id="cod_producto" name="cod_producto" value={producto.cod_producto} onChange={handleChange} style={styles.input} />
-                    </div>
                     <div style={styles.formGroup}>
                         <label htmlFor="nombre_producto" style={styles.label}>Nombre:</label>
                         <input type="text" id="nombre_producto" name="nombre_producto" value={producto.nombre_producto} onChange={handleChange} style={styles.input} />

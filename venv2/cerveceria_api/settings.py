@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-AUTH_USER_MODEL = 'cerveceria.Usuario'
+""" AUTH_USER_MODEL = 'cerveceria.Usuario' """
 
 AUTHENTICATION_BACKENDS = [
     'cerveceria.backends.CorreoBackend',
@@ -89,7 +89,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'localhost:1521/xe',
-        'USER': 'jorge3',
+        'USER': 'jorge4',
         'PASSWORD': 'duoc',
         'TEST': {
             'USER': 'default_test',

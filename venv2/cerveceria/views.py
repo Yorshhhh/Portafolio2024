@@ -1,62 +1,110 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import Group
 from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,action
-from .serializer import ProductoSerializer,UsuarioSerializer,RolSerializer,\
+from rest_framework.permissions import IsAdminUser
+from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
-from .models import Producto,Usuario,Rol,Detalle_Pedido,Pedido
+from .models import Producto,Usuario,Detalle_Pedido,Pedido
 
 # Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
     serializer_class = UsuarioSerializer
     queryset = Usuario.objects.all()
+    # Protege la vista con permisos adecuados
 
-    def perform_create(self, serializer):
-        # Obtener o establecer el rol predeterminado
-        rol_default, created = Rol.objects.get_or_create(pk=1)
-        # Asignar el rol predeterminado si no se proporciona
-        serializer.save(cod_rol=serializer.validated_data.get('cod_rol', rol_default))
-
-    # Opcional: Método para crear un usuario específico desde una URL diferente si es necesario
     @action(detail=False, methods=['post'])
     def register(self, request):
+        """
+        Handle user registration.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        
+        # Perform create and save the user instance
+        user = serializer.save()
+        
+        # Optional: Assign user to a default group (e.g., "customers")
+        default_group_name = "Cliente"
+        try:
+            group = Group.objects.get(name=default_group_name)
+            user.groups.add(group)
+        except Group.DoesNotExist:
+            # Optionally handle the case where the group does not exist
+            pass
+
+        # Prepare response headers
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAdminUser])
+    def create_superuser(self, request):
+        """
+        Handle the creation of superusers.
+        Only accessible to admin users.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user = serializer.save(is_staff=True, is_superuser=True)
+        
+        # Optional: Assign user to a default group (e.g., "administrators")
+        default_group_name = "Administrador"
+        try:
+            group = Group.objects.get(name=default_group_name)
+            user.groups.add(group)
+        except Group.DoesNotExist:
+            # Optionally handle the case where the group does not exist
+            pass
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def create(self, request, *args, **kwargs):
         """
-        Sobrescribir el método create para manejar el registro de usuarios.
+        Override the create method to handle user registration.
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        
+        user = serializer.save()
+        
+        default_group_name = "Cliente"
+        try:
+            group = Group.objects.get(name=default_group_name)
+            user.groups.add(group)
+        except Group.DoesNotExist:
+            # Optionally handle the case where the group does not exist
+            pass
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
+
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
+        """
+        Handle the user login and token creation.
+        """
         serializer = CustomAuthTokenSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
+        
+        # Retrieve the user and create/get the token
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
+        
+        # Serialize user data for response
         user_data = UsuarioSerializer(user).data
 
-        return Response({'token': token.key,'user': user_data}, status=status.HTTP_200_OK)
-
+        return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
+    
 class ProductoView(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer
     queryset = Producto.objects.all()
 
-class RolesView(viewsets.ModelViewSet):
-    serializer_class = RolSerializer
-    queryset = Rol.objects.all()
-
-class DetallePedidoView(viewsets.ModelViewSet):
+class Detalle_PedidoView(viewsets.ModelViewSet):
     serializer_class = Detalle_PedidoSerializer
     queryset = Detalle_Pedido.objects.all()
 

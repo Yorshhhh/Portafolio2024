@@ -582,35 +582,6 @@ button#submit-button:hover {
 }
 
 /*---------------------------------------
- SOCIAL ICON              
------------------------------------------*/
-
-.social-icon {
-  position: relative;
-  padding: 0;
-  margin: 5px 0 0 0;
-}
-
-.social-icon li {
-  display: inline-block;
-  list-style: none;
-}
-
-.social-icon li a {
-  text-decoration: none;
-  display: inline-block;
-  color: var(--p-color);
-  font-size: var(--p-font-size);
-  font-weight: var(--font-weight-bold);
-  margin: 5px 10px;
-  text-align: center;
-}
-
-.social-icon li a:hover {
-  color: var(--primary-color);
-}
-
-/*---------------------------------------
  RESPONSIVE STYLES              
 -----------------------------------------*/
 

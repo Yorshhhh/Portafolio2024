@@ -18,7 +18,7 @@ export const CartProvider = ({ children }) => {
   const [showCart, setShowCart] = useState(false);
   const [deliveryCost, setDeliveryCost] = useState(0);
 
-  const addToCart = (item, quantity = 1) => {
+  const addToCart = (item, quantity ) => {
     const existingItemIndex = cartItems.findIndex(
       (cartItem) => cartItem.cod_producto === item.cod_producto
     );

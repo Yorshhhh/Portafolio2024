@@ -1,7 +1,7 @@
 
 
 :root {
-    --vistaproducto-body-font-family: 'Ubuntu';
+    --vistaproducto-body-font-family: 'Plain';
     --vistaproducto-body-max-width: 1200px;
     --vistaproducto-body-margin: 0 auto;
   }
@@ -36,7 +36,7 @@ header {
 	background-color: #eee;
 	margin-bottom: 50px;
 	color: #222;
-	font-family: 'ubuntu';
+	font-family: 'Plain';
 }
 
 main {
@@ -50,6 +50,13 @@ main {
 	flex: 1;
 }
 
+.container-img img {
+	width: 100%; /* Asegura que la imagen ocupe todo el ancho del contenedor */
+	height: auto; /* Mantiene la proporción de la imagen */
+	object-fit: cover; /* Ajusta la imagen para que cubra completamente el contenedor */
+  }
+
+  
 .container-info-product {
 	flex: 1;
 	display: flex;
@@ -228,10 +235,4 @@ main {
 .text-product p:hover{
     color: #1bbeb4;
 }
-/* footer*/
-footer {
-	padding: 30px;
-	background-color: #eee;
-	margin-top: 50px;
-	color: #222;
-}
+

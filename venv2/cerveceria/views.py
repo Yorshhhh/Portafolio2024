@@ -49,16 +49,18 @@ class UsuarioView(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
+        # Save the user instance
         user = serializer.save(is_staff=True, is_superuser=True)
         
-        # Optional: Assign user to a default group (e.g., "administrators")
-        default_group_name = "Administrador"
-        try:
-            group = Group.objects.get(name=default_group_name)
-            user.groups.add(group)
-        except Group.DoesNotExist:
-            # Optionally handle the case where the group does not exist
-            pass
+        # Assign user to default groups (e.g., "administrators")
+        default_group_names = ["Administrador"]
+        for group_name in default_group_names:
+            try:
+                group = Group.objects.get(name=group_name)
+                user.groups.set([group])  # Use groups.set() to assign group
+            except Group.DoesNotExist:
+                # Optionally handle the case where the group does not exist
+                pass
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

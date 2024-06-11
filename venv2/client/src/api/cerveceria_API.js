@@ -13,7 +13,7 @@ export const agregarProducto = (producto) => {
 }
 
 export const registrarUsuario = (usuario) =>{
-  return cerveceriaAPI.post("/usuarios/", usuario);
+  return cerveceriaAPI.post("/usuarios/register/", usuario);
 }
 
 export const loginUsuario = (credenciales) =>{

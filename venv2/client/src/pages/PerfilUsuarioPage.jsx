@@ -11,10 +11,11 @@ function PerfilUsuarioPage() {
         <hr />
         <hr />
         <hr />
-        <h2>Nombres: {`${user.nombres} ${user.apellidos}`} </h2>
+        {/* <h2>Nombres: {`${user.nombres} ${user.apellidos}`} </h2> */}
+        <h2>Nombres: {user.nombres}</h2>
+        <h2>Apellidos: {user.apellidos}</h2>
         <h2>Correo: {user.correo}</h2>
         <h2>Telefono: {user.telefono}</h2>
-        <h2>Rol: {user.cod_rol}</h2>
       </div>
     </>
   );

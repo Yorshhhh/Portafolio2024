@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CarritoContext";
 import "../css/estilovistaproducto.css";
-import Footer from '../components/Footer'
+import Footer from "../components/Footer";
 
 function VistaProductoPage() {
   const [producto, setProducto] = useState(null); // Estado para almacenar la información del producto
@@ -18,18 +18,13 @@ function VistaProductoPage() {
     setShowCart,
   } = useCart();
 
-
-// funciones para aumentar o disminuir producto a carrito
+  // funciones para aumentar o disminuir producto a carrito
   const incrementQuantity = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
+    setQuantity((prevQuantity) => prevQuantity + 1);
   };
   const decrementQuantity = () => {
-    setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+    setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
-
-
-  
-
 
   return (
     <div className="vista-producto">
@@ -70,7 +65,6 @@ function VistaProductoPage() {
           <div className="container-description">
             <div className="title-description">
               <h2>Descripcion</h2>
-              
             </div>
 
             <div className="text-description">
@@ -84,20 +78,17 @@ function VistaProductoPage() {
           </div>
           <hr />
           <div className="text-description">
-            <h2>Cantidad en CC:  CC</h2>
+            <h2>Cantidad en CC: CC</h2>
             {/* Mostrar la descripción del producto */}
           </div>
           <hr />
           <div className="container-quantity">
-            <h2>Stock disponible: 
-
-            </h2>
+            <h2>Stock disponible:</h2>
           </div>
           <hr />
           <div className="container-price">
             <h2>Precio: </h2>
             {/* Mostrar el precio del producto */}
-           
           </div>
 
           <div className="container-add-cart">
@@ -108,17 +99,23 @@ function VistaProductoPage() {
                 value={quantity} /* Modifica aquí para usar value */
                 min="1"
                 className="input-quantity"
-                onChange={(e) => setQuantity(parseInt(e.target.value) || 1)} /* Actualiza el estado quantity */
+                onChange={(e) =>
+                  setQuantity(parseInt(e.target.value) || 1)
+                } /* Actualiza el estado quantity */
               />
 
               <div className="btn-increment-decrement">
-                <i className="fa-solid fa-chevron-up" id="increment" onClick={incrementQuantity}></i>
-                <i className="fa-solid fa-chevron-down" id="decrement" onClick={decrementQuantity}></i>
+                <i
+                  className="fa-solid fa-chevron-up"
+                  id="increment"
+                  onClick={incrementQuantity}
+                ></i>
+                <i
+                  className="fa-solid fa-chevron-down"
+                  id="decrement"
+                  onClick={decrementQuantity}
+                ></i>
               </div>
-
-
-             
-
             </div>
             <br />
             <button
@@ -152,11 +149,8 @@ function VistaProductoPage() {
         </div>
       </section>
 
-     {/* FOOTER */}
-     <Footer />
-     
-
-     
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import "../css/estilovistaproducto.css";
 function VistaProductoPage() {
   const { id } = useParams(); // Obtener el ID del producto desde la URL
   const [producto, setProducto] = useState(null); // Estado para almacenar la información del producto
+  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true); // Estado para controlar el loading
   const {
     cartItems,
@@ -18,6 +19,30 @@ function VistaProductoPage() {
     showCart,
     setShowCart,
   } = useCart();
+
+  const incrementQuantity = () => {
+    setQuantity((prevQuantity) => {
+      if (prevQuantity < producto.stock_producto) {
+        return prevQuantity + 1;
+      }
+      return prevQuantity;
+    });
+  };
+
+  const decrementQuantity = () => {
+    setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+  };
+
+  const handleChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    if (value >= 1 && value <= producto.stock_producto) {
+      setQuantity(value);
+    } else if (value > producto.stock_producto) {
+      setQuantity(producto.stock_producto);
+    } else {
+      setQuantity(1);
+    }
+  };
 
   useEffect(() => {
     async function fetchProducto() {
@@ -64,12 +89,6 @@ function VistaProductoPage() {
       </div>
 
       <main>
-        {/*         <div className="container-img">
-          <img
-            src={producto.imagen || "images.jpeg"} // Mostrar la imagen del producto o una por defecto
-            alt="imagen-producto"
-          />
-        </div> */}
         <div className="container-img">
           <img
             src="../../public/images.jpeg" // Mostrar la imagen del producto o una por defecto
@@ -114,20 +133,35 @@ function VistaProductoPage() {
               <input
                 type="number"
                 placeholder="1"
-                defaultValue="1"
+                value={quantity} /* Modifica aquí para usar value */
                 min="1"
                 className="input-quantity"
+                onChange={handleChange}
               />
 
               <div className="btn-increment-decrement">
-                <i className="fa-solid fa-chevron-up" id="increment"></i>
-                <i className="fa-solid fa-chevron-down" id="decrement"></i>
+                <i
+                  className="fa-solid fa-chevron-up"
+                  id="increment"
+                  onClick={incrementQuantity}
+                ></i>
+                <i
+                  className="fa-solid fa-chevron-down"
+                  id="decrement"
+                  onClick={decrementQuantity}
+                ></i>
               </div>
             </div>
             <br />
             <button
               className="btn-add-to-cart"
-              onClick={() => addToCart(producto)}
+              onClick={() => {
+                if (quantity <= producto.stock_producto) {
+                  addToCart(producto, quantity);
+                } else {
+                  alert("La cantidad supera el stock disponible.");
+                }
+              }}
             >
               <i className="fa-solid fa-plus"></i>
               Añadir al carrito

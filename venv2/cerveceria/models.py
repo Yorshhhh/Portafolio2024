@@ -18,18 +18,18 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(correo, password, **extra_fields)
 
-#MODELO USUARIO
 class Usuario(AbstractBaseUser, PermissionsMixin):
-    correo = models.CharField(max_length=255, unique=True, primary_key=True)
+    correo = models.EmailField(unique=True, primary_key=True)  # Asegúrate de usar EmailField
     nombres = models.CharField(max_length=155)
     apellidos = models.CharField(max_length=255)
-    telefono = models.IntegerField(unique=True)
+    telefono = models.CharField(max_length=20, unique=True)
     direccion = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
+
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='user_set_custom',
@@ -46,7 +46,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'correo'
-    REQUIRED_FIELDS = ['nombres', 'apellidos','telefono']
+    REQUIRED_FIELDS = ['nombres', 'apellidos', 'telefono']
 
     def __str__(self):
         return self.correo

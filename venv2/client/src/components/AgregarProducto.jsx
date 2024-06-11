@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 
 export default function AgregarProducto() {
     const [producto, setProducto] = useState({
-        cod_producto: '',
         nombre_producto: '',
         descripcion_producto: '',
         precio_producto: 0,

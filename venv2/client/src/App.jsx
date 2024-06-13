@@ -8,6 +8,7 @@ import ExitoPage from "./pages/ExitoPage";
 import PerfilUsuarioPage from "./pages/PerfilUsuarioPage";
 import VistaProducto from "./pages/VistaProducto";
 import AgregarProductoPage from "./pages/AgregarProductoPage";
+import ListarProductosPage from './pages/ListarProductosPage'; // Importar el nuevo componente
 import NotFound from './components/NotFound'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <Route path="/perfil" element={<PerfilUsuarioPage />} />
       <Route path="/producto/:id" element={<VistaProducto />} />
       <Route path="/agregar-producto" element={<AgregarProductoPage />} />
+      <Route path="/listar-productos" element={<ListarProductosPage/>} /> {/* Ruta para listar productos */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

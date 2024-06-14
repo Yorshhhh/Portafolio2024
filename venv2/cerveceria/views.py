@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,action
-from rest_framework.permissions import IsAdminUser
+""" from rest_framework.permissions import IsAdminUser,IsAuthenticated """
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
@@ -14,8 +14,30 @@ from .models import Producto,Usuario,Detalle_Pedido,Pedido
 class UsuarioView(viewsets.ModelViewSet):
     serializer_class = UsuarioSerializer
     queryset = Usuario.objects.all()
+    lookup_field = 'id'
+
     # Protege la vista con permisos adecuados
 
+    # Acción personalizada para actualizar la dirección
+    @action(detail=False, methods=['put'], url_path='actualizar-direccion/(?P<correo>[^/.]+)')
+    def actualizar_direccion(self, request, correo=None):
+        print(f"Actualizando dirección para: {correo}")
+        try:
+            usuario = Usuario.objects.get(correo=correo)
+            print("Usuario encontrado:", usuario)
+            serializer = self.get_serializer(usuario, data=request.data, partial=True)
+            if serializer.is_valid():
+                print("Datos validados, guardando nueva dirección...")
+                serializer.save()
+                return Response(serializer.data)
+            
+            print("Errores de validación:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Usuario.DoesNotExist:
+            print("Usuario no encontrado.")
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        
     @action(detail=False, methods=['post'])
     def register(self, request):
         """
@@ -40,31 +62,26 @@ class UsuarioView(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @action(detail=False, methods=['post'], permission_classes=[IsAdminUser])
-    def create_superuser(self, request):
-        """
-        Handle the creation of superusers.
-        Only accessible to admin users.
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    @action(detail=False, methods=['post'], url_path='create_admin')
+    def create_admin(self, request):
+        correo = request.data.get('correo')
+        password = request.data.get('password')
+        nombres = request.data.get('nombres')
+        apellidos = request.data.get('apellidos')
+        telefono = request.data.get('telefono')
+    
+        try:
+            user = Usuario.objects.create_admin(
+                correo=correo,
+                password=password,
+                nombres=nombres,
+                apellidos=apellidos,
+                telefono=telefono
+            )
+            return Response({'detail': 'Administrador creado con éxito'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Save the user instance
-        user = serializer.save(is_staff=True, is_superuser=True)
-        
-        # Assign user to default groups (e.g., "administrators")
-        default_group_names = ["Administrador"]
-        for group_name in default_group_names:
-            try:
-                group = Group.objects.get(name=group_name)
-                user.groups.set([group])  # Use groups.set() to assign group
-            except Group.DoesNotExist:
-                # Optionally handle the case where the group does not exist
-                pass
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
     def create(self, request, *args, **kwargs):
         """
         Override the create method to handle user registration.

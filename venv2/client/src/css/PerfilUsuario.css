@@ -1,0 +1,45 @@
+/* Estilos para la contenedora central */
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  /* Estilos para las acciones del personal */
+  .staff-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  /* Estilos para los botones del personal */
+  .staff-button {
+    width: 200px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .staff-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Estilos para el contenedor de contenido */
+  .content-container {
+    width: 100%;
+    max-width: 600px; /* Puedes ajustar este valor según sea necesario */
+    margin-top: 10px; /* Espacio entre el botón y el contenedor */
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  

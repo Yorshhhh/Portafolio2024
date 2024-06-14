@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllProductos } from "../api/cerveceria_API";
-import { Link } from "react-router-dom";  // Importa Link de react-router-dom
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CarritoContext";
 import "../css/styleproducto.css";
@@ -31,6 +31,11 @@ function ProductosPage() {
     loadProductos();
   }, []);
 
+  // Función para manejar clics en el botón de agregar al carrito
+  const handleAgregarCarritoClick = (producto) => {
+    addToCart(producto); // Llama a addToCart con el producto
+  };
+
   return (
     <>
       <Navbar
@@ -51,7 +56,7 @@ function ProductosPage() {
               data-aos="fade-up"
               data-aos-delay="400"
             >
-              <Link to={`/producto/${producto.cod_producto}`}> {/* Enlace a la página de detalles */}
+              <Link to={`/producto/${producto.cod_producto}`}>
                 <div className="className-thumb">
                   <div className="imagen">
                     <img
@@ -76,7 +81,7 @@ function ProductosPage() {
               </Link>
               <button
                 className="agregar-carrito"
-                onClick={() => addToCart(producto)}
+                onClick={() => handleAgregarCarritoClick(producto)}
               >
                 Agregar al carrito
               </button>

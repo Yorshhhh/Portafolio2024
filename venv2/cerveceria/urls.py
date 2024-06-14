@@ -15,6 +15,5 @@ urlpatterns = [
     path("docs/", include_docs_urls(title="Cerveceria API")),
     path("update-stock/", update_stock, name="update_stock"), 
     path("login/", CustomAuthToken.as_view(), name="login"),
-    path('usuarios/create_superuser/', UsuarioView.as_view({'post': 'create_superuser'}), name='create_superuser'),
 ]
 #MOISES SEPULVEDA, OJO

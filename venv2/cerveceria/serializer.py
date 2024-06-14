@@ -8,8 +8,13 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Usuario
         fields = '__all__'
+        read_only_fields = ('password',)
         extra_kwargs = {
-            'password': {'write_only': True}
+            'correo': {'required': False},  # Campo opcional
+            'nombres': {'required': False},  # Campo opcional
+            'apellidos': {'required': False},  # Campo opcional
+            'telefono': {'required': False},  # Campo opcional
+            'password': {'required': False},  # Campo opcional
         }
 
     def create(self, validated_data):

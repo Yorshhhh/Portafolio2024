@@ -8,9 +8,14 @@ import ExitoPage from "./pages/ExitoPage";
 import PerfilUsuarioPage from "./pages/PerfilUsuarioPage";
 import VistaProducto from "./pages/VistaProducto";
 import AgregarProductoPage from "./pages/AgregarProductoPage";
+<<<<<<< HEAD
 import NotFound from './components/NotFound';
 import Prueba from './pages/prueba';
 
+=======
+import ListarProductosPage from './pages/ListarProductosPage'; // Importar el nuevo componente
+import NotFound from './components/NotFound'
+>>>>>>> rama-nico
 
 function App() {
   return (
@@ -25,6 +30,7 @@ function App() {
       <Route path="/perfil" element={<PerfilUsuarioPage />} />
       <Route path="/producto/:id" element={<VistaProducto />} />
       <Route path="/agregar-producto" element={<AgregarProductoPage />} />
+      <Route path="/listar-productos" element={<ListarProductosPage/>} /> {/* Ruta para listar productos */}
       <Route path="*" element={<NotFound />} />
       <Route path="/prueba" element={<Prueba />} />
     </Routes>

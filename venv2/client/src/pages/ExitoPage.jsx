@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { registrarPedido,registrarDetalles } from "../api/cerveceria_API";
-import { useLocation,useNavigate } from "react-router-dom";
+import { registrarPedido, registrarDetalles } from "../api/cerveceria_API";
+import { useLocation } from "react-router-dom";
 import CarritoExito from "../components/CarritoExito";
 import Navbar from "../components/Navbar";
 import "../css/ExitoPage.css";
 
 function ExitoPage() {
-  const history = useNavigate()
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [carro, setCarrito] = useState([]);
   const [transactionData, setTransactionData] = useState(null);
   const [cantidadProductos, setCantidadProductos] = useState(0);
   const [error, setError] = useState(null);
-  const [confirmado, setConfirmado] = useState(
-    sessionStorage.getItem("transaccionConfirmada") === "true"
-  );
 
   const fechaPedido = new Date().toISOString().split("T")[0];
 
@@ -53,7 +49,7 @@ function ExitoPage() {
     const params = new URLSearchParams(location.search);
     const token = params.get("token_ws");
 
-    if (token && !confirmado) {
+    if (token) {
       try {
         const response = await axios.post(
           "http://localhost:3000/webpay_plus/commit",
@@ -88,19 +84,15 @@ function ExitoPage() {
                 await Promise.all(promises);
                 console.log(
                   "Todos los detalles de pedidos han sido registrados."
-                );
-
+                )
                 localStorage.removeItem("carrito");
+                //AGREGAR REFRESH DEL COMPONENTE CARRITO
                 console.log("Carrito eliminado del localStorage.");
-
-                setConfirmado(true);
-                sessionStorage.setItem("transaccionConfirmada", "true");
-                // Redirigir al usuario después de 5 segundos
-                setTimeout(() => {
-                  history("/perfil");
-                }, 5000);
               } catch (error) {
-                console.error("Error al registrar los detalles del pedido:", error);
+                console.error(
+                  "Error al registrar los detalles del pedido:",
+                  error
+                );
               }
             } catch (error) {
               console.error("Error al registrar pedido:", error);
@@ -109,7 +101,7 @@ function ExitoPage() {
         } else {
           setError(
             "Error en la transacción: " +
-            JSON.stringify(response.data.commitResponse)
+              JSON.stringify(response.data.commitResponse)
           );
         }
       } catch (error) {
@@ -121,7 +113,7 @@ function ExitoPage() {
   };
 
   useEffect(() => {
-    if (user && carro.length > 0 && !confirmado) {
+    if (user && carro.length > 0) {
       confirmTransaction();
     }
   }, [location, user, carro]);

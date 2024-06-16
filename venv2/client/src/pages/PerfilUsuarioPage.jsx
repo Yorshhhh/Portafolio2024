@@ -105,6 +105,9 @@ function PerfilUsuarioPage() {
 
   return (
     <>
+      <hr />
+      <hr />
+      <hr />
       <Navbar />
       <div className="center-container">
         <h1>Información del usuario</h1>

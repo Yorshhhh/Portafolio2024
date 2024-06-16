@@ -97,7 +97,7 @@ function RegisterAdmin() {
         setCorreo("")
         setPassword("")
         setConfirmPassword("")
-        navigate("/page"); // Redirige al dashboard de administradores
+        navigate("/perfil"); // Redirige al dashboard de administradores
       } else {
         console.error("Error al registrar el administrador");
       }

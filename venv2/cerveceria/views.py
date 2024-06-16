@@ -17,27 +17,6 @@ class UsuarioView(viewsets.ModelViewSet):
     lookup_field = 'id'
 
     # Protege la vista con permisos adecuados
-
-    # Acción personalizada para actualizar la dirección
-    @action(detail=False, methods=['put'], url_path='actualizar-direccion/(?P<correo>[^/.]+)')
-    def actualizar_direccion(self, request, correo=None):
-        print(f"Actualizando dirección para: {correo}")
-        try:
-            usuario = Usuario.objects.get(correo=correo)
-            print("Usuario encontrado:", usuario)
-            serializer = self.get_serializer(usuario, data=request.data, partial=True)
-            if serializer.is_valid():
-                print("Datos validados, guardando nueva dirección...")
-                serializer.save()
-                return Response(serializer.data)
-            
-            print("Errores de validación:", serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        except Usuario.DoesNotExist:
-            print("Usuario no encontrado.")
-            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
-        
     @action(detail=False, methods=['post'])
     def register(self, request):
         """
@@ -116,6 +95,7 @@ class CustomAuthToken(ObtainAuthToken):
         
         # Serialize user data for response
         user_data = UsuarioSerializer(user).data
+        print("tu eres el encargado de enviarme la informacion del usuario o no?")
 
         return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
     

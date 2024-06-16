@@ -8,36 +8,29 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Usuario
         fields = '__all__'
-        read_only_fields = ('password',)
         extra_kwargs = {
-            'correo': {'required': False},  # Campo opcional
-            'nombres': {'required': False},  # Campo opcional
-            'apellidos': {'required': False},  # Campo opcional
-            'telefono': {'required': False},  # Campo opcional
-            'password': {'required': False},  # Campo opcional
+            'password': {'write_only': True},
+            'correo': {'required': False},
+            'nombres': {'required': False},
+            'apellidos': {'required': False},
+            'telefono': {'required': False},
         }
 
     def create(self, validated_data):
-        # Extraer la contraseña de los datos validados
-        password = validated_data.pop('password')
+        password = validated_data.pop('password', None)
+        if not password:
+            raise serializers.ValidationError({"password": "Se requiere una contraseña."})
 
-        # Crear una instancia del modelo Usuario con los datos restantes
         usuario = Usuario(**validated_data)
-
-        # Encriptar la contraseña
         usuario.password = make_password(password)
-
-        # Guardar el usuario en la base de datos
         usuario.save()
-        # Asignamos el usuario al grupo "Clientes"
+
         try:
             group = Group.objects.get(name="Clientes")
             usuario.groups.add(group)
         except Group.DoesNotExist:
-            # Handle the case where the group does not exist
             pass
-        
-        # Devolver la instancia del usuario
+
         return usuario
     
 class CustomAuthTokenSerializer(serializers.Serializer):

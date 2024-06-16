@@ -1,0 +1,21 @@
+.horizontal-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start; /* Alinea los elementos al principio del contenedor */
+  margin-top: 8em;
+}
+
+.horizontal-container > div {
+  flex: 0 0 calc(33.33% - 20px); /* Define el ancho de cada elemento */
+}
+
+.radio-despacho {
+  display: flex; /* Usar Flexbox */
+  justify-content: space-evenly;
+  align-items: center; /* Alinear elementos verticalmente */
+  padding: 0.5rem; /* Espacio interior del div */
+  margin: 1rem 0; /* Margen superior e inferior */
+  border: 1px solid #ccc; /* Borde del div */
+  background-color: #f9f9f9; /* Color de fondo */
+}

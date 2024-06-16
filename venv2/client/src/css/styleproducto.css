@@ -1,0 +1,39 @@
+.row{
+    padding: 100px 200px;
+}
+
+.className-thumb {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    
+}
+.product-card:hover {
+    transform: translateY(-10px);
+}
+.imagen {
+    width: 80%;
+    height: 330px;
+    object-fit: cover;
+}
+.className-info {
+    padding: 50px;
+}
+
+.className-info  p {
+    margin-bottom: 5px;
+}
+.agregar-carrito {
+    padding: 10px 20px;
+    background-color: #7270EC;
+    color: #FFEFFF;
+    border: 1px solid #7270EC;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+.btn-add-to-cart:hover {
+    background-color: #5e5ce6;
+    border-color: #5e5ce6;
+}

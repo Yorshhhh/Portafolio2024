@@ -1,45 +1,73 @@
-/* Estilos para la contenedora central */
-.center-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  
-  /* Estilos para las acciones del personal */
-  .staff-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  /* Estilos para los botones del personal */
-  .staff-button {
-    width: 200px;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .staff-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Estilos para el contenedor de contenido */
-  .content-container {
-    width: 100%;
-    max-width: 600px; /* Puedes ajustar este valor según sea necesario */
-    margin-top: 10px; /* Espacio entre el botón y el contenedor */
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
+.user-profile-center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 50px;
+}
+
+.user-profile-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.user-profile-card h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.user-profile-card p {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.user-profile-direccion {
+  margin: 20px 0;
+}
+
+.user-profile-direccion-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-profile-direccion-input {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.user-profile-button {
+  padding: 10px 15px;
+  font-size: 16px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.user-profile-btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.user-profile-btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.user-profile-staff-actions,
+.user-profile-non-staff-actions {
+  margin-top: 20px;
+}
+
+.user-profile-content-container {
+  margin-top: 20px;
+}
+

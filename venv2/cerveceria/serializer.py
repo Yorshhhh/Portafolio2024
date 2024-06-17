@@ -19,6 +19,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password', None)
         if not password:
+            
             raise serializers.ValidationError({"password": "Se requiere una contraseña."})
 
         usuario = Usuario(**validated_data)

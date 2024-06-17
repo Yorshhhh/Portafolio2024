@@ -79,12 +79,6 @@ function ProductosPage() {
                   </div>
                 </div>
               </Link>
-              <button
-                className="agregar-carrito"
-                onClick={() => handleAgregarCarritoClick(producto)}
-              >
-                Agregar al carrito
-              </button>
             </div>
           ))}
         </div>

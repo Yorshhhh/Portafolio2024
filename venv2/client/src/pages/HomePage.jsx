@@ -84,20 +84,6 @@ function HomePage() {
                     <p>Cantidad: {producto.litros} CC.</p>
                     <p>Precio: ${producto.precio_producto}</p>
                     <p>Stock: {producto.stock_producto}</p>
-                    <button
-                      className="agregar-carrito btn-3"
-                      onClick={() => addToCart(producto)}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#7270EC",
-                        color: "#FFEFFF",
-                        border: "1px solid #7270EC",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Agregar al carrito
-                    </button>
                   </div>
                 </div>
               </div>

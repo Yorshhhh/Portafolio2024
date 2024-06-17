@@ -1,0 +1,41 @@
+/* HistorialPedidos.css */
+
+.totales-container {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .totales-container ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .totales-container li {
+    margin: 5px 0;
+  }
+  
+  .total-ganancias {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .historial-table th, .historial-table td {
+    padding: 10px;
+    text-align: left;
+    color: black;
+  }
+  
+  .historial-table th {
+    background-color: #f5f5f5;
+  }
+  
+  .chart-container {
+    margin-top: 30px;
+  }
+  

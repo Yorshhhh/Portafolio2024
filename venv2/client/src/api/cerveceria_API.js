@@ -59,6 +59,15 @@ export const registrarDetalles = async (detalles) => {
     throw error; // Propaga el error para ser manejado en otro lugar
   }
 };
+
+export const historialPedidos = async (correo) => {
+  try {
+    const response = await cerveceriaAPI.post("/historial_pedidos/", { correo: correo });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 /* export const actualizarDireccion = (correoUsuario, nuevaDireccion) => {
   return axios.put(`http://localhost:8000/usuarios/actualizar-direccion/${correoUsuario}/`, { direccion: nuevaDireccion })
       .then(response => {

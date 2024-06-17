@@ -1,14 +1,16 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import Group
+from django.db import connection
 from rest_framework import viewsets,status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,action
-""" from rest_framework.permissions import IsAdminUser,IsAuthenticated """
+
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
-from .models import Producto,Usuario,Detalle_Pedido,Pedido
+from .models import Producto,Usuario,Detalle_Pedido,Pedido,HistorialPedido
 
 # Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
@@ -98,6 +100,47 @@ class CustomAuthToken(ObtainAuthToken):
         print("tu eres el encargado de enviarme la informacion del usuario o no?")
 
         return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
+    
+class HistorialPedidosView(APIView):
+    def post(self, request):
+        correo = request.data.get('correo')
+
+        if not correo:
+            return Response({"error": "Falta el parámetro correo en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        print("Usuario Correo:", correo)
+
+        try:
+            # Procesamiento para obtener el historial de pedidos según correo
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT * 
+                    FROM vista_ganancias_por_usuarios
+                """, )
+                pedidos = cursor.fetchall()
+
+            # Verificar si hay resultados
+            if not pedidos:
+                return Response({"error": "No se encontraron pedidos para el usuario especificado."}, status=status.HTTP_404_NOT_FOUND)
+
+            # Transformar los resultados en un formato más accesible para Python
+            pedidos_data = []
+            for pedido in pedidos:
+                pedido_dict = {
+                    "nombres_clientes": pedido[0],
+                    "correo": pedido[1],
+                    "total": pedido[2],
+                }
+                pedidos_data.append(pedido_dict)
+
+            print("Pedidos obtenidos:", pedidos)
+            print("Datos a enviar al frontend:", pedidos_data)
+
+            return Response(pedidos_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
 class ProductoView(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer

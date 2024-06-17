@@ -10,11 +10,11 @@ router.register(r'usuarios', UsuarioView, 'usuario')
 router.register(r'pedidos', PedidoView, 'pedido')
 router.register(r'detalle_pedidos', Detalle_PedidoView, 'detalle_pedido')
 
-
 urlpatterns = [
     path("", include(router.urls)),
     path("docs/", include_docs_urls(title="Cerveceria API")),
     path("update-stock/", update_stock, name="update_stock"), 
     path("login/", CustomAuthToken.as_view(), name="login"),
+    path("historial_pedidos/", HistorialPedidosView.as_view(),name='historial_pedidos')
 ]
 #MOISES SEPULVEDA, OJO

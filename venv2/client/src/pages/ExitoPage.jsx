@@ -48,7 +48,7 @@ function ExitoPage() {
   const confirmTransaction = async () => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token_ws");
-
+    
     if (token) {
       try {
         const response = await axios.post(

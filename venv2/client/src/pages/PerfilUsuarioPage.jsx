@@ -5,6 +5,7 @@ import AgregarProducto from "../components/AgregarProducto";
 import RegisterAdmin from "../components/RegisterAdmin";
 import ListarProductos from "../components/ListarProductos";
 import { actualizarDireccion } from "../api/cerveceria_API"; // Importa la función de Axios
+import HistorialPedidos from "../components/HistorialPedidos";
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null); // Cambiado a null inicialmente
@@ -13,6 +14,7 @@ function PerfilUsuarioPage() {
   const [showCrearAdmin, setShowCrearAdmin] = useState(false);
   const [showModificarProducto, setModificarProducto] = useState(false);
   const [showNonStaffContent, setShowNonStaffContent] = useState(false);
+  const [showMostrarHistorialPedidos, setMostrarHistorialPedidos] = useState(false)
   const [editDireccion, setEditDireccion] = useState(false);
   const [direccion, setDireccion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,8 +45,8 @@ function PerfilUsuarioPage() {
           cantidad: producto.quantity,
           precio_unitario: producto.precio_producto,
         }));
-        console.log('Detalles del carrito')
-        console.log(detalles)
+        console.log("Detalles del carrito");
+        console.log(detalles);
       } catch (error) {
         console.error("Error al parsear el carrito del localStorage:", error);
       }
@@ -128,6 +130,10 @@ function PerfilUsuarioPage() {
     setShowNonStaffContent((prev) => !prev);
   };
 
+  const handleMostrarHistorialPedidos = () =>{
+    setMostrarHistorialPedidos((prev) => !prev)
+  }
+
   return (
     <>
       <hr />
@@ -136,7 +142,6 @@ function PerfilUsuarioPage() {
       <Navbar />
       <div className="center-container">
         <h1>Información del usuario</h1>
-        <h2>ID: {user.id}</h2>
         <h2>Nombres: {user.nombres}</h2>
         <h2>Apellidos: {user.apellidos}</h2>
         <h2>Correo: {user.correo}</h2>
@@ -173,10 +178,9 @@ function PerfilUsuarioPage() {
           </div>
         )}
 
-        <h2>¿Es Staff?: {user.is_staff ? "Sí" : "No"}</h2>
-
         {user.is_staff ? (
           // Si el usuario es staff
+          //Boton agregar producto
           <div className="staff-actions">
             <button
               className="staff-button"
@@ -206,6 +210,17 @@ function PerfilUsuarioPage() {
             </button>
             <div className="content-container">
               {showModificarProducto && <ListarProductos />}
+            </div>
+            <button
+              className="staff-button"
+              onClick={handleMostrarHistorialPedidos}
+            >
+              {showMostrarHistorialPedidos
+                ? "Ocultar Ganancias por Usuario"
+                : "Mostrar Ganancias por Usuario"}
+            </button>
+            <div className="content-container">
+              {showMostrarHistorialPedidos && <HistorialPedidos />}
             </div>
           </div>
         ) : (

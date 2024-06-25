@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ListarProductos() {
     const [productos, setProductos] = useState([]);
@@ -46,6 +48,9 @@ export default function ListarProductos() {
             if (!response.ok) {
                 throw new Error('Error al guardar el producto');
             }
+
+            // Actualización exitosa, mostrar alerta toast
+            toast.success('Producto modificado correctamente');
 
             setEditIndex(null);
         } catch (error) {
@@ -182,6 +187,7 @@ export default function ListarProductos() {
                     </div>
                 ))}
             </div>
+            <ToastContainer />
         </>
     );
 }

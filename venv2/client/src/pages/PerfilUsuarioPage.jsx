@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { actualizarDireccion } from "../api/cerveceria_API"; // Importa la función de Axios
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import AgregarProducto from "../components/AgregarProducto";
 import RegisterAdmin from "../components/RegisterAdmin";
 import ListarProductos from "../components/ListarProductos";
-import { actualizarDireccion } from "../api/cerveceria_API"; // Importa la función de Axios
 import Ganancias from "../components/GananciasAdmin";
+import HistorialPedidos from '../components/HistorialPedidos'
 
-import '../css/PerfilUsuario.css'
+import "../css/PerfilUsuario.css";
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null); // Cambiado a null inicialmente
@@ -16,8 +17,9 @@ function PerfilUsuarioPage() {
   const [showCrearAdmin, setShowCrearAdmin] = useState(false);
   const [showModificarProducto, setModificarProducto] = useState(false);
   const [showNonStaffContent, setShowNonStaffContent] = useState(false);
-  const [showMostrarHistorialPedidos, setMostrarHistorialPedidos] =
+  const [showGanancias, setMostrarGanancias] =
     useState(false);
+  const [showHistorial, setShowHistorialPedido] = useState(false)
   const [editDireccion, setEditDireccion] = useState(false);
   const [direccion, setDireccion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -133,9 +135,14 @@ function PerfilUsuarioPage() {
     setShowNonStaffContent((prev) => !prev);
   };
 
-  const handleMostrarHistorialPedidos = () => {
-    setMostrarHistorialPedidos((prev) => !prev);
+  const handleMostrarGanancias = () => {
+    setMostrarGanancias((prev) => !prev);
   };
+
+  const handleHistorialPedidos = () =>{
+    setShowHistorialPedido((prev) => !prev)
+  }
+
 
   return (
     <>
@@ -224,19 +231,19 @@ function PerfilUsuarioPage() {
             </div>
             <button
               className="user-profile-button user-profile-staff-button"
-              onClick={handleMostrarHistorialPedidos}
+              onClick={handleMostrarGanancias}
             >
-              {showMostrarHistorialPedidos
-                ? "Ocultar Ganancias por Usuario"
-                : "Mostrar Ganancias por Usuario"}
+              {showHistorial
+                ? "Ocultar Ganancias por Producto"
+                : "Mostrar Ganancias por Producto"}
             </button>
             <div className="content-container">
-              {showMostrarHistorialPedidos && <Ganancias />}
+              {showGanancias && <Ganancias />}
             </div>
           </div>
         ) : (
           // Si el usuario no es staff
-          <div className="non-staff-actions">
+          <div className="non-staff-actions user-profile-card">
             <h1>Funciones del usuario</h1>
             <button
               className="non-staff-button"
@@ -246,12 +253,22 @@ function PerfilUsuarioPage() {
                 ? "Ocultar Opciones de Usuario"
                 : "Mostrar Opciones de Usuario"}
             </button>
+
             <div className="content-container">
               {showNonStaffContent && (
                 <div>
                   <h1>No eres staff</h1>
                 </div>
               )}
+            </div>
+
+            <button className="non-staff button" onClick={handleHistorialPedidos}>
+              {showNonStaffContent
+                ? "Ocultar Historial de Pedidos"
+                : "Mostrar Historial de Pedidos"}
+            </button>
+            <div className="content-container">
+                {showHistorial && <HistorialPedidos />}
             </div>
           </div>
         )}

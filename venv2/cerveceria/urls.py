@@ -15,6 +15,7 @@ urlpatterns = [
     path("docs/", include_docs_urls(title="Cerveceria API")),
     path("update-stock/", update_stock, name="update_stock"), 
     path("login/", CustomAuthToken.as_view(), name="login"),
-    path("historial_pedidos/", HistorialPedidosView.as_view(),name='historial_pedidos')
+    path("historial_pedidos/", HistorialPedidosView.as_view(),name='historial_pedidos'),
+    path('ganancias_producto/', VentasProductoView.as_view(), name='ganancias_por_producto'),
 ]
 #MOISES SEPULVEDA, OJO

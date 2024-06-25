@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { historialPedidos } from '../api/cerveceria_API'
+import {useState,useEffect} from 'react'
+import {historialPedidos} from '../api/cerveceria_API'
 
-function HistorialPedidos() {
+const HistorialPedidos = () => {
   const [user, setUser] = useState(null);
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,10 +19,10 @@ function HistorialPedidos() {
 
         const res = await historialPedidos(userParsed.id);
         setHistorial(res);
-
         setLoading(false);
       } catch (error) {
-        console.error("Error al obtener el historial ", error);
+        console.error("Error al obtener el historial ");
+        console.error(error);
         setError("Error al cargar el historial de pedidos.");
         setLoading(false);
       }
@@ -31,14 +31,6 @@ function HistorialPedidos() {
     fetchHistorial();
   }, []);
 
-  if (!user) {
-    return (
-      <div className="center-container">
-        <h2>No se pudo cargar la información del usuario.</h2>
-      </div>
-    );
-  }
-
   if (loading) {
     return <div>Cargando...</div>;
   }
@@ -46,7 +38,22 @@ function HistorialPedidos() {
   if (error) {
     return <div>{error}</div>;
   }
-  return <></>;
-}
+
+  return (
+    <div>
+      <h2>Historial de Pedidos</h2>
+      {historial.map((pedido, index) => (
+        <div key={index}>
+          <h3>{pedido.nombre_producto}</h3>
+          <p>Cantidad: {pedido.cantidad}</p>
+          <p>Precio Unitario: {pedido.precio_unitario}</p>
+          <p>Total: {pedido.total}</p>
+          <p>Fecha de Pedido: {pedido.fecha_pedido}</p>
+          <p>Fecha de Entrega: {pedido.fecha_entrega}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default HistorialPedidos;

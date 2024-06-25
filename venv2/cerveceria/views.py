@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view,action
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
-from .models import Producto,Usuario,Detalle_Pedido,Pedido,HistorialPedido
+from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto
 
 # Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
@@ -100,56 +100,70 @@ class CustomAuthToken(ObtainAuthToken):
         print("tu eres el encargado de enviarme la informacion del usuario o no?")
 
         return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
-    
+
+class VentasProductoView(APIView):
+    def get(self, request):
+        try:
+            ventas = GananciasProducto.objects.all()
+            ventas_data = [
+                {
+                    "cod_producto": venta.cod_producto,
+                    "nombre_producto": venta.nombre_producto,
+                    "total": venta.total
+                }
+                for venta in ventas
+            ]
+            return Response(ventas_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class HistorialPedidosView(APIView):
-    def post(self, request):
-        user_id = request.data.get('id')
+    def get(self, request):
+        user_id = request.query_params.get('id')  # Usar query_params para obtener el 'id'
 
         if not user_id:
+            print("entonces pasas por aca?")
             return Response({"error": "Falta el parámetro ID en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
 
-        print("Usuario Correo:", user_id)
+        print("Usuario ID:", user_id)
 
         try:
-            #formatear consulta antes de pasarla!
-            # Procesamiento para obtener el historial de pedidos según correo
+            # Formatear o limpiar el user_id aquí si es necesario
+            user_id = user_id.strip().replace('-', '')  # Ejemplo: remover guiones
+
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT c.cod_producto Codigo_Producto, c.nombre_producto, b.fecha_pedido,cantidad, precio_unitario, cantidad*precio_unitario total
+                    SELECT c.cod_producto Codigo_Producto, c.nombre_producto, b.fecha_pedido, cantidad, precio_unitario, cantidad*precio_unitario total
                     , NVL(TO_CHAR(b.fecha_entrega, 'YYYY-MM-DD'), 'Pendiente') AS fecha_entrega
                     FROM cerveceria_detalle_pedido a    
-                            JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
-                            JOIN cerveceria_producto c ON (a.cod_producto_id = c.cod_producto)
-                    WHERE b.id_usuario_id = '9e78f5b17bdd4be8afc422415609dd77'
-                    ;
-                """, )
+                    JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
+                    JOIN cerveceria_producto c ON (a.cod_producto_id = c.cod_producto)
+                    WHERE b.id_usuario_id = %s
+                """, [user_id])
                 pedidos = cursor.fetchall()
 
-            # Verificar si hay resultados
             if not pedidos:
                 return Response({"error": "No se encontraron pedidos para el usuario especificado."}, status=status.HTTP_404_NOT_FOUND)
 
-            # Transformar los resultados en un formato más accesible para Python
             pedidos_data = []
             for pedido in pedidos:
                 pedido_dict = {
                     "cod_producto": pedido[0],
                     "nombre_producto": pedido[1],
-                    "cantidad": pedido[2],
-                    "precio_unitario": pedido[3],
-                    "total": pedido[4],
-                    "fecha_pedido": pedido[5],
+                    "fecha_pedido": pedido[2],
+                    "cantidad": pedido[3],
+                    "precio_unitario": pedido[4],
+                    "total": pedido[5],
                     "fecha_entrega": pedido[6]
                 }
                 pedidos_data.append(pedido_dict)
 
-            print("Pedidos obtenidos:", pedidos)
-            print("Datos a enviar al frontend:", pedidos_data)
-
             return Response(pedidos_data, status=status.HTTP_200_OK)
 
         except Exception as e:
+            print("pasas por aqui entonces?")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     
 class ProductoView(viewsets.ModelViewSet):

@@ -2,6 +2,10 @@ import axios from "axios";
 
 const cerveceriaAPI = axios.create({
   baseURL: "http://127.0.0.1:8000/",
+  timeout: 10000, // Tiempo de espera opcional, ajusta según sea necesario
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 // Agregar un interceptor para incluir el token en todas las solicitudes
 cerveceriaAPI.interceptors.request.use(
@@ -60,23 +64,25 @@ export const registrarDetalles = async (detalles) => {
   }
 };
 
-export const getGanancias = async (correo) => {
+export const obtenerGananciasPorProducto = async () => {
   try {
-    const response = await cerveceriaAPI.post("/historial_pedidos/", { correo: correo });
+    const response = await cerveceriaAPI.get('/ganancias_producto/');
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const historialPedidos = async(id) =>{
-  try{
-    const response = await cerveceriaAPI.post("/historial_pedidos/", id)
-    return response.data
-  }catch(error){
+export const historialPedidos = async(id) => {
+  try {
+    const response = await cerveceriaAPI.get("/historial_pedidos/", {
+      params: { id: id }
+    });
+    return response.data;
+  } catch (error) {
     throw error;
   }
-}
+};
 /* export const actualizarDireccion = (correoUsuario, nuevaDireccion) => {
   return axios.put(`http://localhost:8000/usuarios/actualizar-direccion/${correoUsuario}/`, { direccion: nuevaDireccion })
       .then(response => {

@@ -93,3 +93,12 @@ class HistorialPedido(models.Model):
     class Meta:
         managed = False  # No queremos que Django intente crear esta tabla
         db_table = 'historial_pedidos'  # Nombre de la vista en la base de datos
+
+class GananciasProducto(models.Model):
+    cod_producto = models.IntegerField(primary_key=True)
+    nombre_producto = models.CharField(max_length=100)
+    total = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'view_ventas_producto'

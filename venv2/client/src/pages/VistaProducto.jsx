@@ -4,6 +4,9 @@ import Navbar from "../components/Navbar";
 import { getProducto } from "../api/cerveceria_API"; // Importar la función para obtener un producto
 import { useCart } from "../context/CarritoContext";
 import "../css/estilovistaproducto.css";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function VistaProductoPage() {
   const { id } = useParams(); // Obtener el ID del producto desde la URL
@@ -72,11 +75,12 @@ function VistaProductoPage() {
     if (cartItem) {
       const newQuantity = cartItem.quantity + quantity;
       if (newQuantity > producto.stock_producto) {
-        alert("La cantidad total en el carrito supera el stock disponible.");
+        toast.error("La cantidad total en el carrito supera el stock disponible.");
         return;
       }
     }
     addToCart(producto, quantity);
+    toast.success('¡Producto añadido al carrito!', { autoClose: 2000 }); // Toast de éxito al agregar al carrito
   };
 
   return (
@@ -204,6 +208,7 @@ function VistaProductoPage() {
 
       <script src="https://kit.fontawesome.com/81581fb069.js" crossOrigin="anonymous"></script>
       <script src="vistaproducto.js"></script>
+      <ToastContainer />
     </div>
   );
 }

@@ -67,16 +67,28 @@ function VistaProductoPage() {
     return <div>No se encontró el producto</div>; // Mostrar mensaje si no se encontró el producto
   }
 
+  const handleAddToCart = () => {
+    const cartItem = cartItems.find(item => item.cod_producto === producto.cod_producto);
+    if (cartItem) {
+      const newQuantity = cartItem.quantity + quantity;
+      if (newQuantity > producto.stock_producto) {
+        alert("La cantidad total en el carrito supera el stock disponible.");
+        return;
+      }
+    }
+    addToCart(producto, quantity);
+  };
+
   return (
     <div className="vista-producto">
       <div>
         <Navbar
           cartItems={cartItems}
-          removeFromCart={removeFromCart}
+          /* removeFromCart={removeFromCart} */
           toggleCart={toggleCart}
           showCart={showCart}
           setShowCart={setShowCart}
-          clearCartHandler={clearCartHandler}
+        /* clearCartHandler={clearCartHandler} */
         />
       </div>
       <hr />
@@ -153,16 +165,7 @@ function VistaProductoPage() {
               </div>
             </div>
             <br />
-            <button
-              className="btn-add-to-cart"
-              onClick={() => {
-                if (quantity <= producto.stock_producto) {
-                  addToCart(producto, quantity);
-                } else {
-                  alert("La cantidad supera el stock disponible.");
-                }
-              }}
-            >
+            <button className="btn-add-to-cart" onClick={handleAddToCart}>
               <i className="fa-solid fa-plus"></i>
               Añadir al carrito
             </button>
@@ -199,6 +202,7 @@ function VistaProductoPage() {
         crossOrigin="anonymous"
       ></script>
 
+      <script src="https://kit.fontawesome.com/81581fb069.js" crossOrigin="anonymous"></script>
       <script src="vistaproducto.js"></script>
     </div>
   );

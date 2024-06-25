@@ -5,7 +5,9 @@ import AgregarProducto from "../components/AgregarProducto";
 import RegisterAdmin from "../components/RegisterAdmin";
 import ListarProductos from "../components/ListarProductos";
 import { actualizarDireccion } from "../api/cerveceria_API"; // Importa la función de Axios
-import HistorialPedidos from "../components/HistorialPedidos";
+import Ganancias from "../components/GananciasAdmin";
+
+import '../css/PerfilUsuario.css'
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null); // Cambiado a null inicialmente
@@ -14,7 +16,8 @@ function PerfilUsuarioPage() {
   const [showCrearAdmin, setShowCrearAdmin] = useState(false);
   const [showModificarProducto, setModificarProducto] = useState(false);
   const [showNonStaffContent, setShowNonStaffContent] = useState(false);
-  const [showMostrarHistorialPedidos, setMostrarHistorialPedidos] = useState(false)
+  const [showMostrarHistorialPedidos, setMostrarHistorialPedidos] =
+    useState(false);
   const [editDireccion, setEditDireccion] = useState(false);
   const [direccion, setDireccion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -130,9 +133,9 @@ function PerfilUsuarioPage() {
     setShowNonStaffContent((prev) => !prev);
   };
 
-  const handleMostrarHistorialPedidos = () =>{
-    setMostrarHistorialPedidos((prev) => !prev)
-  }
+  const handleMostrarHistorialPedidos = () => {
+    setMostrarHistorialPedidos((prev) => !prev);
+  };
 
   return (
     <>
@@ -140,50 +143,52 @@ function PerfilUsuarioPage() {
       <hr />
       <hr />
       <Navbar />
-      <div className="center-container">
-        <h1>Información del usuario</h1>
-        <h2>Nombres: {user.nombres}</h2>
-        <h2>Apellidos: {user.apellidos}</h2>
-        <h2>Correo: {user.correo}</h2>
-        <h2>Teléfono: {user.telefono}</h2>
-        <h2>Dirección: </h2>
-        {editDireccion ? (
-          // Mostrar input de edición si se está editando la dirección
-          <div className="direccion-input-container">
-            <input
-              type="text"
-              placeholder="Ingresa tu dirección"
-              value={direccion}
-              onChange={handleDireccionChange}
-              className="direccion-input"
-            />
-            <button
-              onClick={handleGuardarDireccionClick}
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? "Guardando..." : "Guardar dirección"}
-            </button>
-          </div>
-        ) : (
-          // Mostrar la dirección y botón de editar si está proporcionada
-          <div>
-            <h2>{user.direccion || "Dirección no proporcionada"}</h2>
-            <button
-              onClick={handleEditarDireccionClick}
-              className="btn btn-secondary"
-            >
-              Editar dirección
-            </button>
-          </div>
-        )}
+      <div className="user-profile-center-container">
+        <div className="user-profile-card">
+          <h1>Información del usuario</h1>
+          <h2>Nombres: {user.nombres}</h2>
+          <h2>Apellidos: {user.apellidos}</h2>
+          <h2>Correo: {user.correo}</h2>
+          <h2>Teléfono: {user.telefono}</h2>
+          <h2>Dirección: </h2>
+          {editDireccion ? (
+            // Mostrar input de edición si se está editando la dirección
+            <div className="user-profile-direccion-input-container">
+              <input
+                type="text"
+                placeholder="Ingresa tu dirección"
+                value={direccion}
+                onChange={handleDireccionChange}
+                className="user-profile-direccion-input"
+              />
+              <button
+                onClick={handleGuardarDireccionClick}
+                className="user-profile-button user-profile-btn-primary"
+                disabled={loading}
+              >
+                {loading ? "Guardando..." : "Guardar dirección"}
+              </button>
+            </div>
+          ) : (
+            // Mostrar la dirección y botón de editar si está proporcionada
+            <div>
+              <h2>{user.direccion || "Dirección no proporcionada"}</h2>
+              <button
+                onClick={handleEditarDireccionClick}
+                className="user-profile-button user-profile-btn-secondary"
+              >
+                Editar dirección
+              </button>
+            </div>
+          )}
+        </div>
 
         {user.is_staff ? (
           // Si el usuario es staff
-          //Boton agregar producto
-          <div className="staff-actions">
+          <div className="user-profile-staff-actions">
+            <h1>Funciones del administrador</h1>
             <button
-              className="staff-button"
+              className="user-profile-button user-profile-staff-button"
               onClick={handleAgregarProductoClick}
             >
               {showAgregarProducto
@@ -194,7 +199,10 @@ function PerfilUsuarioPage() {
               {showAgregarProducto && <AgregarProducto />}
             </div>
 
-            <button className="staff-button" onClick={handleCrearAdminClick}>
+            <button
+              className="user-profile-button user-profile-staff-button"
+              onClick={handleCrearAdminClick}
+            >
               {showCrearAdmin
                 ? "Ocultar Crear Administrador"
                 : "Crear Administrador"}
@@ -203,7 +211,10 @@ function PerfilUsuarioPage() {
               {showCrearAdmin && <RegisterAdmin />}
             </div>
 
-            <button className="staff-button" onClick={handleModificarProducto}>
+            <button
+              className="user-profile-button user-profile-staff-button"
+              onClick={handleModificarProducto}
+            >
               {showModificarProducto
                 ? "Ocultar Modificar Producto"
                 : "Modificar Productos"}
@@ -212,7 +223,7 @@ function PerfilUsuarioPage() {
               {showModificarProducto && <ListarProductos />}
             </div>
             <button
-              className="staff-button"
+              className="user-profile-button user-profile-staff-button"
               onClick={handleMostrarHistorialPedidos}
             >
               {showMostrarHistorialPedidos
@@ -220,12 +231,13 @@ function PerfilUsuarioPage() {
                 : "Mostrar Ganancias por Usuario"}
             </button>
             <div className="content-container">
-              {showMostrarHistorialPedidos && <HistorialPedidos />}
+              {showMostrarHistorialPedidos && <Ganancias />}
             </div>
           </div>
         ) : (
           // Si el usuario no es staff
           <div className="non-staff-actions">
+            <h1>Funciones del usuario</h1>
             <button
               className="non-staff-button"
               onClick={handleNonStaffContentClick}

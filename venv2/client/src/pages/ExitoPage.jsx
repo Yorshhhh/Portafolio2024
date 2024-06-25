@@ -124,8 +124,6 @@ function ExitoPage() {
       <hr />
       <hr />
       <hr />
-      <hr />
-      <hr />
       {/* Mostrar la cantidad de productos únicos en el carrito */}
       <div>
         <h2>Cod productos en el carro: {cantidadProductos}</h2>
@@ -164,8 +162,6 @@ function ExitoPage() {
               />
               <CarritoExito />
             </div>
-            <h2>Transacción confirmada</h2>
-            <pre>{JSON.stringify(transactionData, null, 2)}</pre>
           </div>
         )}
         {error && (

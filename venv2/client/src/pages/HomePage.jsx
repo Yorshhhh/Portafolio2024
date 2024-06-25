@@ -92,7 +92,6 @@ function HomePage() {
         </div>
       </section>
       {/* CARRUSEL */}
-      <hr />
       {/* INFORMACION Y MODALIDAD DE VENTAS */}
       <Modalidad />
       {/*  SECCION DE MEMBRESIAS */}

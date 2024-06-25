@@ -82,13 +82,13 @@ class Detalle_Pedido(models.Model):
         return f"Detalle del pedido {self.cod_pedido} para el producto {self.cod_producto}"
 
 class HistorialPedido(models.Model):
-    user_id = models.CharField(max_length=100)
-    correo = models.EmailField()
-    cod_pedido = models.CharField(max_length=100)
-    id_detalle_pedido = models.CharField(max_length=100)
-    cod_producto_id = models.CharField(max_length=100)
-    nombre_producto = models.CharField(max_length=255)
-    fecha_pedido = models.DateTimeField()
+    codigo_producto = models.IntegerField()
+    nombre_producto = models.CharField(max_length=100)
+    cantidad = models.IntegerField()
+    precio_unitario = models.IntegerField()
+    total = models.IntegerField()
+    fecha_pedido = models.DateField()
+    fecha_entrega = models.DateField()
 
     class Meta:
         managed = False  # No queremos que Django intente crear esta tabla

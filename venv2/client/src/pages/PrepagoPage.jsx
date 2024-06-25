@@ -9,6 +9,7 @@ import "../css/Prepago.css";
 
 function Prepago() {
   const [selectedOption, setSelectedOption] = useState("");
+  const [user, setUser] = useState(null);
   const [showProceedButton, setShowProceedButton] = useState(false);
   const [total, setTotal] = useState(0);
   const [token, setToken] = useState("");
@@ -47,6 +48,20 @@ function Prepago() {
     setTotal(calculateTotal());
   }, [cartItems, deliveryCost, calculateTotal]);
 
+  useEffect(() => {
+    const userJson = localStorage.getItem("usuario");
+    if (userJson) {
+      try {
+        const userParsed = JSON.parse(userJson);
+        setUser(userParsed);
+      } catch (error) {
+        console.error("Error al parsear el usuario del localStorage: ", error);
+      }
+    } else {
+      console.warn("No existe un usuario en el localStorage");
+    }
+  }, []);
+
   const handleDeliveryChange = (event) => {
     if (event.target.id === "retiro") {
       setDeliveryCost(0);
@@ -78,6 +93,9 @@ function Prepago() {
 
   return (
     <>
+      <hr />
+      <hr />
+      <hr />
       <Navbar
         cartItems={cartItems}
         removeFromCart={removeFromCart}
@@ -87,69 +105,71 @@ function Prepago() {
         clearCartHandler={clearCartHandler}
       />
       <div className="horizontal-container">
-        <div>
-          <LoginForm />
-        </div>
-        <hr />
-        <div className="card">
-          <h2>No tienes una cuenta? No te preocupes</h2>
-          <h3>Sigue tu compra como invitado</h3>
-          <div className="form-check radio-despacho">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="flexRadioDefault"
-              id="retiro"
-              onChange={handleDeliveryChange}
-              checked={selectedOption === "Retiro en tienda"}
-            />
-            <label className="form-check-label" htmlFor="retiro">
-              Retiro en tienda
-            </label>
+        {user ? (
+          <>
+            <div className="card">
+              <h2>No tienes una cuenta? No te preocupes</h2>
+              <h3>Sigue tu compra como invitado</h3>
+              <div className="form-check radio-despacho">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="flexRadioDefault"
+                  id="retiro"
+                  onChange={handleDeliveryChange}
+                  checked={selectedOption === "Retiro en tienda"}
+                />
+                <label className="form-check-label" htmlFor="retiro">
+                  Retiro en tienda
+                </label>
+              </div>
+              <div className="form-check radio-despacho">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="flexRadioDefault"
+                  id="despacho"
+                  onChange={handleDeliveryChange}
+                  checked={selectedOption === "Despacho a domicilio"}
+                />
+                <label className="form-check-label" htmlFor="despacho">
+                  Despacho a domicilio
+                </label>
+              </div>
+            </div>
+            <div className="card centered-content">
+              <h1>Resumen de compra</h1>
+              <CarritoPrepago />
+              <h3>Tipo de entrega: {selectedOption}</h3>
+              <h2>Total: ${calculateTotal(cartItems)}</h2>
+              <hr />
+              <h2>Compra 100% Segura</h2>
+              <h2>
+                Envíos a toda la región por ventas superiores a los 20.000 pesos
+              </h2>
+              <hr />
+              <h2>Aceptamos los siguientes medios de pago</h2>
+              <img
+                src="logos_medios_de_pago.png"
+                alt="Medios de pago"
+                style={{ width: "70%", height: "auto" }}
+              />
+              <hr />
+              {selectedOption === "Retiro en tienda" && showProceedButton && (
+                <input
+                  onClick={handlePayment}
+                  className="btn btn-success"
+                  type="submit"
+                  value={"Continuar compra"}
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="login-container">
+            <LoginForm />
           </div>
-          <div className="form-check radio-despacho">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="flexRadioDefault"
-              id="despacho"
-              onChange={handleDeliveryChange}
-              checked={selectedOption === "Despacho a domicilio"}
-            />
-            <label className="form-check-label" htmlFor="despacho">
-              Despacho a domicilio
-            </label>
-          </div>
-        </div>
-        <hr />
-        <div className="card centered-content">
-          <h1>Resumen de compra</h1>
-          <CarritoPrepago />
-          <h3>Tipo de entrega: {selectedOption}</h3>
-          <h2>Total: ${calculateTotal(cartItems)}</h2>
-          <hr />
-          <h2>Compra 100% Segura</h2>
-          <h2>
-            Envíos a toda la región por ventas superiores a los 20.000 pesos
-          </h2>
-          <hr />
-          <h2>Aceptamos los siguientes medios de pago</h2>
-
-          <img
-            src="logos_medios_de_pago.png"
-            alt=""
-            style={{ width: "70%", height: "auto" }}
-          />
-          <hr />
-          {selectedOption === "Retiro en tienda" && showProceedButton && (
-            <input
-              onClick={handlePayment}
-              className="btn btn-success"
-              type="submit"
-              value={"Continuar compra"}
-            />
-          )}
-        </div>
+        )}
       </div>
     </>
   );

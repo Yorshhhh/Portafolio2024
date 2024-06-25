@@ -103,19 +103,25 @@ class CustomAuthToken(ObtainAuthToken):
     
 class HistorialPedidosView(APIView):
     def post(self, request):
-        correo = request.data.get('correo')
+        user_id = request.data.get('id')
 
-        if not correo:
-            return Response({"error": "Falta el parámetro correo en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+        if not user_id:
+            return Response({"error": "Falta el parámetro ID en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
 
-        print("Usuario Correo:", correo)
+        print("Usuario Correo:", user_id)
 
         try:
+            #formatear consulta antes de pasarla!
             # Procesamiento para obtener el historial de pedidos según correo
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT * 
-                    FROM vista_ganancias_por_usuarios
+                    SELECT c.cod_producto Codigo_Producto, c.nombre_producto, b.fecha_pedido,cantidad, precio_unitario, cantidad*precio_unitario total
+                    , NVL(TO_CHAR(b.fecha_entrega, 'YYYY-MM-DD'), 'Pendiente') AS fecha_entrega
+                    FROM cerveceria_detalle_pedido a    
+                            JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
+                            JOIN cerveceria_producto c ON (a.cod_producto_id = c.cod_producto)
+                    WHERE b.id_usuario_id = '9e78f5b17bdd4be8afc422415609dd77'
+                    ;
                 """, )
                 pedidos = cursor.fetchall()
 
@@ -127,9 +133,13 @@ class HistorialPedidosView(APIView):
             pedidos_data = []
             for pedido in pedidos:
                 pedido_dict = {
-                    "nombres_clientes": pedido[0],
-                    "correo": pedido[1],
-                    "total": pedido[2],
+                    "cod_producto": pedido[0],
+                    "nombre_producto": pedido[1],
+                    "cantidad": pedido[2],
+                    "precio_unitario": pedido[3],
+                    "total": pedido[4],
+                    "fecha_pedido": pedido[5],
+                    "fecha_entrega": pedido[6]
                 }
                 pedidos_data.append(pedido_dict)
 

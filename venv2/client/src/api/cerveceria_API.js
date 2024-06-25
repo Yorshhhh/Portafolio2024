@@ -60,7 +60,7 @@ export const registrarDetalles = async (detalles) => {
   }
 };
 
-export const historialPedidos = async (correo) => {
+export const getGanancias = async (correo) => {
   try {
     const response = await cerveceriaAPI.post("/historial_pedidos/", { correo: correo });
     return response.data;
@@ -68,6 +68,15 @@ export const historialPedidos = async (correo) => {
     throw error;
   }
 };
+
+export const historialPedidos = async(id) =>{
+  try{
+    const response = await cerveceriaAPI.post("/historial_pedidos/", id)
+    return response.data
+  }catch(error){
+    throw error;
+  }
+}
 /* export const actualizarDireccion = (correoUsuario, nuevaDireccion) => {
   return axios.put(`http://localhost:8000/usuarios/actualizar-direccion/${correoUsuario}/`, { direccion: nuevaDireccion })
       .then(response => {

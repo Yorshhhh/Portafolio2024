@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { historialPedidos } from "../api/cerveceria_API";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,Cell } from 'recharts';
-import "../css/HistorialPedidos.css";
+import { historialPedidos } from '../api/cerveceria_API'
 
 function HistorialPedidos() {
   const [user, setUser] = useState(null);
-  const [historial, setHistorialPedidos] = useState([]);
+  const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,8 +17,8 @@ function HistorialPedidos() {
         const userParsed = JSON.parse(userJson);
         setUser(userParsed);
 
-        const res = await historialPedidos(userParsed.correo);
-        setHistorialPedidos(res);
+        const res = await historialPedidos(userParsed.id);
+        setHistorial(res);
 
         setLoading(false);
       } catch (error) {
@@ -48,80 +46,7 @@ function HistorialPedidos() {
   if (error) {
     return <div>{error}</div>;
   }
-
-  const obtenerClientesTop5 = () => {
-    const clientesMap = historial.reduce((acc, pedido) => {
-      const correo = pedido.correo;
-      const total = pedido.total;
-
-      if (acc.has(correo)) {
-        acc.set(correo, acc.get(correo) + total);
-      } else {
-        acc.set(correo, total);
-      }
-
-      return acc;
-    }, new Map());
-
-    const clientesArray = Array.from(clientesMap, ([correo, total]) => ({
-      correo,
-      total,
-    }));
-
-    return clientesArray.sort((a, b) => b.total - a.total).slice(0, 5);
-  };
-
-  const clientesTop5 = obtenerClientesTop5();
-
-  const COLORS = ["#FF6384", "#36A2EB", "#FFCE56", "#5cb85c", "#f0ad4e"];
-
-  return (
-    <div>
-      <h2>Ganancias</h2>
-      <table className="historial-table">
-        <thead>
-          <tr>
-            <th>Nombre Cliente</th>
-            <th>Correo</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {historial.map((pedido) => (
-            <tr key={pedido.correo}>
-              <td>{pedido.nombres_clientes}</td>
-              <td>{pedido.correo}</td>
-              <td>{pedido.total}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="chart-container" style={{ width: "100%", height: 400 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={clientesTop5}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="correo" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="total" fill="#82ca9d">
-              {clientesTop5.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
+  return <></>;
 }
 
 export default HistorialPedidos;

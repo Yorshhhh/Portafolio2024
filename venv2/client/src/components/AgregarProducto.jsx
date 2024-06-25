@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function AgregarProducto() {
@@ -115,6 +117,7 @@ export default function AgregarProducto() {
             });
             // Limpiar el mensaje de error si la validación es exitosa
             setError('');
+            toast.success('Producto agregado correctamente');
             console.log('Producto agregado exitosamente');
         } catch (error) {
             setError('Error al agregar el producto');
@@ -221,6 +224,7 @@ export default function AgregarProducto() {
                 </form>
                 {error && <div style={styles.error}>{error}</div>}
             </div>
+            <ToastContainer />
         </>
     )
 }

@@ -93,7 +93,8 @@ class PedidoSerializer(serializers.ModelSerializer):
 
     # Ejemplo de validación adicional
     def validate_fecha_entrega(self, value):
-        if value and value < Pedido['fecha_pedido']:
+        if value and value < self.instance.fecha_pedido:
             raise serializers.ValidationError("La fecha de entrega no puede ser anterior a la fecha del pedido.")
         return value
+
     

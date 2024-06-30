@@ -6,7 +6,8 @@ import AgregarProducto from "../components/AgregarProducto";
 import RegisterAdmin from "../components/RegisterAdmin";
 import ListarProductos from "../components/ListarProductos";
 import Ganancias from "../components/GananciasAdmin";
-import HistorialPedidos from '../components/HistorialPedidos'
+import HistorialPedidos from "../components/HistorialPedidos";
+import PedidosPendientes from "../components/PedidosPendientes";
 
 import "../css/PerfilUsuario.css";
 
@@ -17,9 +18,9 @@ function PerfilUsuarioPage() {
   const [showCrearAdmin, setShowCrearAdmin] = useState(false);
   const [showModificarProducto, setModificarProducto] = useState(false);
   const [showNonStaffContent, setShowNonStaffContent] = useState(false);
-  const [showGanancias, setMostrarGanancias] =
-    useState(false);
-  const [showHistorial, setShowHistorialPedido] = useState(false)
+  const [showGanancias, setMostrarGanancias] = useState(false);
+  const [showHistorial, setShowHistorialPedido] = useState(false);
+  const [showPendientes, setShowPendientes] = useState(false);
   const [editDireccion, setEditDireccion] = useState(false);
   const [direccion, setDireccion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -139,10 +140,13 @@ function PerfilUsuarioPage() {
     setMostrarGanancias((prev) => !prev);
   };
 
-  const handleHistorialPedidos = () =>{
-    setShowHistorialPedido((prev) => !prev)
-  }
+  const handleHistorialPedidos = () => {
+    setShowHistorialPedido((prev) => !prev);
+  };
 
+  const handleMostrarPedidos = () => {
+    setShowPendientes((prev) => !prev);
+  };
 
   return (
     <>
@@ -151,43 +155,45 @@ function PerfilUsuarioPage() {
       <hr />
       <Navbar />
       <div className="user-profile-center-container">
-        <div className="user-profile-card">
+        <div className="user-profile-center-container">
           <h1>Información del usuario</h1>
-          <h2>Nombres: {user.nombres}</h2>
-          <h2>Apellidos: {user.apellidos}</h2>
-          <h2>Correo: {user.correo}</h2>
-          <h2>Teléfono: {user.telefono}</h2>
-          <h2>Dirección: </h2>
-          {editDireccion ? (
-            // Mostrar input de edición si se está editando la dirección
-            <div className="user-profile-direccion-input-container">
-              <input
-                type="text"
-                placeholder="Ingresa tu dirección"
-                value={direccion}
-                onChange={handleDireccionChange}
-                className="user-profile-direccion-input"
-              />
-              <button
-                onClick={handleGuardarDireccionClick}
-                className="user-profile-button user-profile-btn-primary"
-                disabled={loading}
-              >
-                {loading ? "Guardando..." : "Guardar dirección"}
-              </button>
-            </div>
-          ) : (
-            // Mostrar la dirección y botón de editar si está proporcionada
-            <div>
-              <h2>{user.direccion || "Dirección no proporcionada"}</h2>
-              <button
-                onClick={handleEditarDireccionClick}
-                className="user-profile-button user-profile-btn-secondary"
-              >
-                Editar dirección
-              </button>
-            </div>
-          )}
+          <div className="user-profile-card">
+            <h2>Nombres: {user.nombres}</h2>
+            <h2>Apellidos: {user.apellidos}</h2>
+            <h2>Correo: {user.correo}</h2>
+            <h2>Teléfono: {user.telefono}</h2>
+            <h2>Dirección: </h2>
+            {editDireccion ? (
+              // Mostrar input de edición si se está editando la dirección
+              <div className="user-profile-direccion-input-container">
+                <input
+                  type="text"
+                  placeholder="Ingresa tu dirección"
+                  value={direccion}
+                  onChange={handleDireccionChange}
+                  className="user-profile-direccion-input"
+                />
+                <button
+                  onClick={handleGuardarDireccionClick}
+                  className="user-profile-button user-profile-btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? "Guardando..." : "Guardar dirección"}
+                </button>
+              </div>
+            ) : (
+              // Mostrar la dirección y botón de editar si está proporcionada
+              <div>
+                <h2>{user.direccion || "Dirección no proporcionada"}</h2>
+                <button
+                  onClick={handleEditarDireccionClick}
+                  className="user-profile-button user-profile-btn-secondary"
+                >
+                  Editar dirección
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {user.is_staff ? (
@@ -240,6 +246,17 @@ function PerfilUsuarioPage() {
             <div className="content-container">
               {showGanancias && <Ganancias />}
             </div>
+            <button
+              className="user-profile-button user-profile-staff-button"
+              onClick={handleMostrarPedidos}
+            >
+              {showPendientes
+                ? "Ocultar Pedidos Pendientes"
+                : "Mostrar Pedidos Pendientes"}
+            </button>
+            <div className="content-container">
+              {showPendientes && <PedidosPendientes />}
+            </div>
           </div>
         ) : (
           // Si el usuario no es staff
@@ -262,13 +279,16 @@ function PerfilUsuarioPage() {
               )}
             </div>
 
-            <button className="non-staff button" onClick={handleHistorialPedidos}>
+            <button
+              className="non-staff button"
+              onClick={handleHistorialPedidos}
+            >
               {showNonStaffContent
                 ? "Ocultar Historial de Pedidos"
                 : "Mostrar Historial de Pedidos"}
             </button>
             <div className="content-container">
-                {showHistorial && <HistorialPedidos />}
+              {showHistorial && <HistorialPedidos />}
             </div>
           </div>
         )}

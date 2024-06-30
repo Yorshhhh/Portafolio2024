@@ -102,3 +102,21 @@ class GananciasProducto(models.Model):
     class Meta:
         managed = False
         db_table = 'view_ventas_producto'
+
+class PedidoPendiente(models.Model):
+    nombre_cliente = models.CharField(max_length=100)
+    correo = models.EmailField()
+    telefono = models.CharField(max_length=20)
+    cod_pedido_id = models.IntegerField(primary_key=True)
+    id_detalle_pedido = models.IntegerField()
+    cod_producto = models.IntegerField()
+    nombre_producto = models.CharField(max_length=20)
+    cantidad = models.IntegerField()
+    precio_unitario = models.IntegerField()
+    total = models.IntegerField()
+    fecha_pedido = models.DateField()
+
+    class Meta:
+        managed: False
+        db_table = 'view_pedidos_pendientes'
+

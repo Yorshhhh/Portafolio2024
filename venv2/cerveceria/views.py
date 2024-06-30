@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view,action
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
-from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto
+from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente
 
 # Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
@@ -117,6 +117,36 @@ class VentasProductoView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class PedidoPendienteView(APIView):
+    def get(self, request):
+        try:
+            # Obtiene todos los pedidos pendientes de la vista
+            pedidos_pendientes = PedidoPendiente.objects.all()
+            
+            # Preparar los datos para enviarlos al frontend
+            pedidos_data = [
+                {
+                    "nombre_cliente": pedido.nombre_cliente,
+                    "correo": pedido.correo,
+                    "telefono": pedido.telefono,
+                    "cod_pedido_id": pedido.cod_pedido_id,
+                    "id_detalle_pedido": pedido.id_detalle_pedido,
+                    "cod_producto": pedido.cod_producto,
+                    "nombre_producto": pedido.nombre_producto,
+                    "cantidad": pedido.cantidad,
+                    "precio_unitario": pedido.precio_unitario,
+                    "total": pedido.total,
+                    "fecha_pedido": pedido.fecha_pedido,
+                }
+                for pedido in pedidos_pendientes
+            ]
+            # Retorna la respuesta con los datos en formato JSON
+            return Response(pedidos_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            # Manejo de excepciones en caso de error
+            print("estas aqui?")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class HistorialPedidosView(APIView):
     def get(self, request):
         user_id = request.query_params.get('id')  # Usar query_params para obtener el 'id'
@@ -133,12 +163,13 @@ class HistorialPedidosView(APIView):
 
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT c.cod_producto Codigo_Producto, c.nombre_producto, b.fecha_pedido, cantidad, precio_unitario, cantidad*precio_unitario total
-                    , NVL(TO_CHAR(b.fecha_entrega, 'YYYY-MM-DD'), 'Pendiente') AS fecha_entrega
+                    SELECT a.cod_pedido_id,a.id_detalle_pedido,c.cod_producto Codigo_Producto, c.nombre_producto, b.fecha_pedido, cantidad, precio_unitario, cantidad*precio_unitario total
+                    , TO_CHAR(b.fecha_entrega, 'YYYY-MM-DD') AS fecha_entrega
                     FROM cerveceria_detalle_pedido a    
                     JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
                     JOIN cerveceria_producto c ON (a.cod_producto_id = c.cod_producto)
                     WHERE b.id_usuario_id = %s
+                    ORDER BY a.cod_pedido_id
                 """, [user_id])
                 pedidos = cursor.fetchall()
 
@@ -148,13 +179,15 @@ class HistorialPedidosView(APIView):
             pedidos_data = []
             for pedido in pedidos:
                 pedido_dict = {
-                    "cod_producto": pedido[0],
-                    "nombre_producto": pedido[1],
-                    "fecha_pedido": pedido[2],
-                    "cantidad": pedido[3],
-                    "precio_unitario": pedido[4],
-                    "total": pedido[5],
-                    "fecha_entrega": pedido[6]
+                    "cod_pedido_id": pedido[0],
+                    "id_detalle_pedido": pedido[1],
+                    "cod_producto": pedido[2],
+                    "nombre_producto": pedido[3],
+                    "fecha_pedido": pedido[4],
+                    "cantidad": pedido[5],
+                    "precio_unitario": pedido[6],
+                    "total": pedido[7],
+                    "fecha_entrega": pedido[8]
                 }
                 pedidos_data.append(pedido_dict)
 

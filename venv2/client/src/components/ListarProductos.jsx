@@ -37,12 +37,21 @@ export default function ListarProductos() {
         }
 
         try {
+            const formData = new FormData();
+            formData.append('nombre_producto', producto.nombre_producto);
+            formData.append('descripcion_producto', producto.descripcion_producto);
+            formData.append('precio_producto', producto.precio_producto);
+            formData.append('stock_producto', producto.stock_producto);
+            formData.append('grado_alcoholico', producto.grado_alcoholico);
+            formData.append('litros', producto.litros);
+            // Añade la imagen solo si se ha seleccionado una nueva
+            if (producto.imagen instanceof File) {
+                formData.append('imagen', producto.imagen);
+            }
+
             const response = await fetch(`http://127.0.0.1:8000/productos/${producto.cod_producto}/`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(producto)
+                body: formData
             });
 
             if (!response.ok) {
@@ -101,6 +110,16 @@ export default function ListarProductos() {
         return valid;
     };
 
+    const handleImageChange = (index, event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const updatedProductos = productos.map((producto, i) =>
+                i === index ? { ...producto, imagen: file } : producto
+            );
+            setProductos(updatedProductos);
+        }
+    };
+
     return (
         <>
             <div style={styles.container}>
@@ -125,6 +144,9 @@ export default function ListarProductos() {
                                     onChange={(e) => handleChange(index, 'descripcion_producto', e.target.value)}
                                     style={styles.textarea}
                                 />
+                                {errors[index]?.descripcion_producto && (
+                                    <div style={styles.errorMessage}>{errors[index].descripcion_producto}</div>
+                                )}
                                 <label style={styles.label}>Precio:</label>
                                 <input
                                     type="number"
@@ -165,6 +187,20 @@ export default function ListarProductos() {
                                 {errors[index]?.litros && (
                                     <div style={styles.errorMessage}>{errors[index].litros}</div>
                                 )}
+                                <label style={styles.label}>Imagen:</label>
+                                <input
+                                    type="file"
+                                    onChange={(e) => handleImageChange(index, e)}
+                                    style={styles.input}
+                                />
+                                {producto.imagen && typeof producto.imagen === 'string' && (
+                                    <div>
+                                        <img src={producto.imagen} alt="Imagen Producto" style={{ maxWidth: '200px', marginTop: '10px' }} />
+                                    </div>
+                                )}
+                                {errors[index]?.imagen && (
+                                    <div style={styles.errorMessage}>{errors[index].imagen}</div>
+                                )}
                                 <button onClick={() => handleSave(index)} style={styles.button}>
                                     Guardar
                                 </button>
@@ -177,6 +213,11 @@ export default function ListarProductos() {
                                 <p>Stock: {producto.stock_producto}</p>
                                 <p>Grado Alcohólico: {producto.grado_alcoholico}</p>
                                 <p>Litros: {producto.litros}</p>
+                                {producto.imagen && typeof producto.imagen === 'string' && (
+                                    <div>
+                                        <img src={producto.imagen} alt="Imagen Producto" style={{ maxWidth: '200px', marginTop: '10px' }} />
+                                    </div>
+                                )}
                                 <div style={styles.buttonContainer}>
                                     <button onClick={() => handleEdit(index)} style={styles.button}>
                                         Modificar

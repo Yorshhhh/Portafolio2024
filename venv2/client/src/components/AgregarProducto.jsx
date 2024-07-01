@@ -10,7 +10,8 @@ export default function AgregarProducto() {
         precio_producto: 0,
         stock_producto: 0,
         grado_alcoholico: 0,
-        litros: 0
+        litros: 0,
+        imagen: null
     });
 
     const [error, setError] = useState('');
@@ -20,30 +21,46 @@ export default function AgregarProducto() {
     const [errorStockProducto, setErrorStockProducto] = useState(false); // Nuevo estado de error
     const [errorGradoAlcoholico, setErrorGradoAlcoholico] = useState(false); // Nuevo estado de error
     const [errorLitros, setErrorLitros] = useState(false); // Nuevo estado de error
+    const [errorImagen, setErrorImagen] = useState(false); // Nuevo estado para error de imagen
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProducto({
-            ...producto,
-            [name]: value
-        });
-        if (name === 'nombre_producto') {
-            setErrorNombreProducto(false);
-        }
-        if (name === 'descripcion_producto') {
-            setErrorDescripcionProducto(false);
-        }
-        if (name === 'precio_producto') {
-            setErrorPrecioProducto(false);
-        }
-        if (name === 'stock_producto') {
-            setErrorStockProducto(false); // Resetear error de stock_producto
-        }
-        if (name === 'grado_alcoholico') {
-            setErrorStockProducto(false);
-        }
-        if (name === 'litros') {
-            setErrorLitros(false); // Reiniciar el error de litros
+        const { name, value, files } = e.target;
+
+        if (name === 'imagen') {
+            setProducto({
+                ...producto,
+                imagen: files[0]  // Guardar la imagen seleccionada en el estado
+            });
+            setErrorImagen(false);  // Reiniciar el error de imagen
+        } else {
+            setProducto({
+                ...producto,
+                [name]: value
+            });
+
+            // Reiniciar los errores según el campo modificado
+            switch (name) {
+                case 'nombre_producto':
+                    setErrorNombreProducto(false);
+                    break;
+                case 'descripcion_producto':
+                    setErrorDescripcionProducto(false);
+                    break;
+                case 'precio_producto':
+                    setErrorPrecioProducto(false);
+                    break;
+                case 'stock_producto':
+                    setErrorStockProducto(false);
+                    break;
+                case 'grado_alcoholico':
+                    setErrorGradoAlcoholico(false);
+                    break;
+                case 'litros':
+                    setErrorLitros(false);
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
@@ -81,6 +98,11 @@ export default function AgregarProducto() {
             setErrorLitros(true); // Error de litros
             valid = false;
         }
+        // Validar la presencia de una imagen
+        if (!producto.imagen) {
+            setErrorImagen(true);
+            valid = false;
+        }
         return valid;
 
     };
@@ -93,30 +115,36 @@ export default function AgregarProducto() {
         }
 
         try {
+            const formData = new FormData();
+            formData.append('nombre_producto', producto.nombre_producto);
+            formData.append('descripcion_producto', producto.descripcion_producto);
+            formData.append('precio_producto', parseFloat(producto.precio_producto));
+            formData.append('stock_producto', parseInt(producto.stock_producto));
+            formData.append('grado_alcoholico', parseFloat(producto.grado_alcoholico));
+            formData.append('litros', parseFloat(producto.litros));
+            formData.append('imagen', producto.imagen); // Agregar la imagen al formulario FormData
+
             const response = await fetch('http://127.0.0.1:8000/productos/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(producto)
+                body: formData
             });
 
             if (!response.ok) {
                 throw new Error('Error al agregar el producto');
             }
 
-            console.log('Producto:', producto);
-            // También puedes reiniciar el estado del formulario después de enviar los datos
+            console.log('Producto agregado exitosamente');
+            // Reiniciar el estado del formulario después de enviar los datos
             setProducto({
                 nombre_producto: '',
                 descripcion_producto: '',
                 precio_producto: 0,
                 stock_producto: 0,
                 grado_alcoholico: 0,
-                litros: 0
+                litros: 0,
+                imagen: null
             });
-            // Limpiar el mensaje de error si la validación es exitosa
-            setError('');
+            setError(''); // Limpiar mensaje de error
             toast.success('Producto agregado correctamente');
             console.log('Producto agregado exitosamente');
         } catch (error) {
@@ -217,6 +245,23 @@ export default function AgregarProducto() {
                         {errorLitros && (
                             <div style={styles.errorMessage}>
                                 El campo Litros no puede estar vacío y estar entre los 473cc y 563cc.
+                            </div>
+                        )}
+                    </div>
+                    {/* Campo para la imagen del producto */}
+                    <div style={styles.formGroup}>
+                        <label htmlFor="imagen" style={styles.label}>Imagen:</label>
+                        <input
+                            type="file"
+                            id="imagen"
+                            name="imagen"
+                            accept="image/*"
+                            onChange={handleChange}
+                            style={styles.input}
+                        />
+                        {errorImagen && (
+                            <div style={styles.errorMessage}>
+                                Por favor, selecciona una imagen para el producto.
                             </div>
                         )}
                     </div>

@@ -60,9 +60,9 @@ function ProductosPage() {
                 <div className="className-thumb">
                   <div className="imagen">
                     <img
-                      src="D_NQ_NP_978928-MLC50613847725_072022-O.jpg"
+                      src={producto.imagen} // Usar la URL real de la imagen del producto
                       className="img-fluid"
-                      alt="cerveza 1"
+                      alt={`Imagen de ${producto.nombre_producto}`}
                     />
                   </div>
 

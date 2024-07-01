@@ -96,7 +96,7 @@ function VistaProductoPage() {
           toggleCart={toggleCart}
           showCart={showCart}
           setShowCart={setShowCart}
-          /* clearCartHandler={clearCartHandler} */
+        /* clearCartHandler={clearCartHandler} */
         />
       </div>
       <hr />
@@ -109,10 +109,11 @@ function VistaProductoPage() {
       </div>
 
       <main>
-        <div className="container-img">
+        <div className="imagen">
           <img
-            src="../../public/images.jpeg" // Mostrar la imagen del producto o una por defecto
-            alt="imagen-producto"
+            src={producto.imagen} // Usar la URL real de la imagen del producto
+            className="img-fluid"
+            alt={`Imagen de ${producto.nombre_producto}`}
           />
         </div>
 

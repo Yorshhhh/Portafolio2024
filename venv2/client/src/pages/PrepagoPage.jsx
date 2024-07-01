@@ -108,8 +108,9 @@ function Prepago() {
         {user ? (
           <>
             <div className="card">
-              <h2>No tienes una cuenta? No te preocupes</h2>
-              <h3>Sigue tu compra como invitado</h3>
+              <h2>
+                A continuacion selecciona el tipo de entrega para tu pedido
+              </h2>
               <div className="form-check radio-despacho">
                 <input
                   className="form-check-input"
@@ -123,7 +124,7 @@ function Prepago() {
                   Retiro en tienda
                 </label>
               </div>
-              <div className="form-check radio-despacho">
+              {/*               <div className="form-check radio-despacho">
                 <input
                   className="form-check-input"
                   type="radio"
@@ -135,7 +136,7 @@ function Prepago() {
                 <label className="form-check-label" htmlFor="despacho">
                   Despacho a domicilio
                 </label>
-              </div>
+              </div> */}
             </div>
             <div className="card centered-content">
               <h1>Resumen de compra</h1>

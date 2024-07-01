@@ -25,9 +25,11 @@ function ExitoPage() {
         setCantidadProductos(carritoParsed.length);
       } catch (error) {
         console.error("Error al parsear el carrito del localStorage:", error);
+        setError("Error al cargar el carrito.");
       }
     } else {
       console.warn("No existen productos en el carrito.");
+      setError("No hay productos en el carrito.");
     }
   }, []);
 
@@ -39,16 +41,18 @@ function ExitoPage() {
         setUser(userParsed);
       } catch (error) {
         console.error("Error al parsear el usuario del localStorage: ", error);
+        setError("Error al cargar el usuario.");
       }
     } else {
       console.warn("No existe un usuario en el localStorage");
+      setError("No hay usuario registrado.");
     }
   }, []);
 
   const confirmTransaction = async () => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token_ws");
-    
+
     if (token) {
       try {
         const response = await axios.post(
@@ -82,32 +86,25 @@ function ExitoPage() {
                   registrarDetalles(detalle)
                 );
                 await Promise.all(promises);
-                console.log(
-                  "Todos los detalles de pedidos han sido registrados."
-                )
+                console.log("Todos los detalles de pedidos han sido registrados.");
                 localStorage.removeItem("carrito");
-                //AGREGAR REFRESH DEL COMPONENTE CARRITO
                 console.log("Carrito eliminado del localStorage.");
               } catch (error) {
-                console.error(
-                  "Error al registrar los detalles del pedido:",
-                  error
-                );
+                console.error("Error al registrar los detalles del pedido:", error);
+                setError("Error al registrar los detalles del pedido.");
               }
             } catch (error) {
               console.error("Error al registrar pedido:", error);
+              setError("Error al registrar el pedido.");
             }
           }
         } else {
-          setError(
-            "Error en la transacción: " +
-              JSON.stringify(response.data.commitResponse)
-          );
+          setError("Error en la transacción: " + JSON.stringify(response.data.commitResponse));
         }
       } catch (error) {
         setError("Error confirmando la transacción: " + error.message);
       }
-    } else if (!token) {
+    } else {
       setError("Token no encontrado en la URL");
     }
   };
@@ -115,8 +112,13 @@ function ExitoPage() {
   useEffect(() => {
     if (user && carro.length > 0) {
       confirmTransaction();
+    } else if (!user) {
+      setError("Usuario no encontrado. No se puede procesar la transacción.");
+    } else if (carro.length === 0) {
+      setError("Carrito vacío. No se puede procesar la transacción.");
     }
   }, [location, user, carro]);
+
   return (
     <>
       <Navbar />
@@ -124,37 +126,11 @@ function ExitoPage() {
       <hr />
       <hr />
       <hr />
-      {/* Mostrar la cantidad de productos únicos en el carrito */}
-      <div>
-        <h2>Cod productos en el carro: {cantidadProductos}</h2>
-        <ul>
-          <h1>Productos en el carrito</h1>
-          {carro.map((producto, index) => (
-            <li key={index}>
-              <p>
-                <strong>Producto:</strong> {producto.nombre_producto}
-              </p>
-              <p>
-                <strong>Código:</strong> {producto.cod_producto}
-              </p>
-              <p>
-                <strong>Cantidad:</strong> {producto.quantity}
-              </p>
-              <p>
-                <strong>Precio:</strong> ${producto.precio_producto}
-              </p>
-              {/* Añade más detalles del producto si lo deseas */}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <p>Fecha formateada: {fechaPedido}</p>
       <div className="center-container">
-        <h1>Confirmando transacción...</h1>
         {transactionData && (
           <div>
             <div className="alert alert-success" role="alert">
-              <h2>Transaccion exitosa!</h2>
+              <h2>¡Transacción exitosa!</h2>
               <img
                 src="tic-verde.jpg"
                 alt=""
@@ -166,7 +142,7 @@ function ExitoPage() {
         )}
         {error && (
           <div>
-            <h2>Error!</h2>
+            <h2>¡Error!</h2>
             <img
               src="cruz-roja.png"
               alt=""

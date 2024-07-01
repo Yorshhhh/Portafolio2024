@@ -136,21 +136,6 @@ function LoginForm() {
           </div>
           <button type="submit" style={styles.button}>Entrar</button>
         </form>
-        <p style={{textAlign: 'center', marginTop: '20px'}}>O Iniciar sesión con redes sociales</p>
-        <div style={{display: 'flex', justifyContent: 'center'}}>
-          <button className="btn btn-outline-primary" style={{marginRight: '10px'}}>
-            <i className="fab fa-facebook-f me-1"></i> Facebook
-          </button>
-          <button className="btn btn-outline-info" style={{marginRight: '10px'}}>
-            <i className="fab fa-twitter me-1"></i> Twitter
-          </button>
-          <button className="btn btn-outline-danger" style={{marginRight: '10px'}}>
-            <i className="fab fa-google me-1"></i> Google
-          </button>
-          <button className="btn btn-outline-dark">
-            <i className="fab fa-linkedin-in me-1"></i> LinkedIn
-          </button>
-        </div>
         <div style={{textAlign: 'center', marginTop: '20px'}}>
           <a href="/home">Volver al Inicio</a>
         </div>

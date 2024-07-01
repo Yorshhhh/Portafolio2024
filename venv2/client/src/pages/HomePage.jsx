@@ -55,7 +55,6 @@ function HomePage() {
       <section className="section" id="productos">
         <div className="container">
           <div className="row">
-           {/*  <h1>Esta es la V4</h1> */}
             <h1>Productos Destacados!</h1>
             {productos.map((producto) => (
               <div

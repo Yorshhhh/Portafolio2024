@@ -124,7 +124,7 @@ function PedidosPendientes() {
                       <strong>Codigo Producto:{detalle.cod_producto}</strong>
                       <br />
                       <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                      <strong>Precio Unitario:</strong>
+                      <strong>Precio:</strong>
                       {detalle.precio_unitario} <br />
                     </li>
                   ))}

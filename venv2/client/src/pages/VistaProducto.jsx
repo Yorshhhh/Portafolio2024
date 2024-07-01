@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; // Importar useParams para obtener el ID de la URL
 import Navbar from "../components/Navbar";
+import Footer from '../components/Footer'
 import { getProducto } from "../api/cerveceria_API"; // Importar la función para obtener un producto
 import { useCart } from "../context/CarritoContext";
 import "../css/estilovistaproducto.css";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function VistaProductoPage() {
   const { id } = useParams(); // Obtener el ID del producto desde la URL
@@ -71,16 +71,20 @@ function VistaProductoPage() {
   }
 
   const handleAddToCart = () => {
-    const cartItem = cartItems.find(item => item.cod_producto === producto.cod_producto);
+    const cartItem = cartItems.find(
+      (item) => item.cod_producto === producto.cod_producto
+    );
     if (cartItem) {
       const newQuantity = cartItem.quantity + quantity;
       if (newQuantity > producto.stock_producto) {
-        toast.error("La cantidad total en el carrito supera el stock disponible.");
+        toast.error(
+          "La cantidad total en el carrito supera el stock disponible."
+        );
         return;
       }
     }
     addToCart(producto, quantity);
-    toast.success('¡Producto añadido al carrito!', { autoClose: 2000 }); // Toast de éxito al agregar al carrito
+    toast.success("¡Producto añadido al carrito!", { autoClose: 2000 }); // Toast de éxito al agregar al carrito
   };
 
   return (
@@ -92,7 +96,7 @@ function VistaProductoPage() {
           toggleCart={toggleCart}
           showCart={showCart}
           setShowCart={setShowCart}
-        /* clearCartHandler={clearCartHandler} */
+          /* clearCartHandler={clearCartHandler} */
         />
       </div>
       <hr />
@@ -177,28 +181,8 @@ function VistaProductoPage() {
         </div>
       </main>
 
-      <section className="container-related-products">
-        <h2>Productos Relacionados</h2>
-        <div className="card-list-products">
-          {/* Aquí puedes agregar lógica para mostrar productos relacionados */}
-          <div className="card">
-            <div className="card-img">
-              <img src="../../public/Pack-Cerveza-Rural.jpg" alt="producto-1" />
-            </div>
-            <div className="info-card">
-              <div className="text-product">
-                <h3>Cerveza -----</h3>
-                <p className="category">Ver Producto</p>
-              </div>
-              <div className="price">$10.000</div>
-            </div>
-          </div>
-          {/* Repite las tarjetas de productos relacionados según sea necesario */}
-        </div>
-      </section>
-
       <footer>
-        <p>Footer</p>
+        <Footer />
       </footer>
 
       <script
@@ -206,7 +190,10 @@ function VistaProductoPage() {
         crossOrigin="anonymous"
       ></script>
 
-      <script src="https://kit.fontawesome.com/81581fb069.js" crossOrigin="anonymous"></script>
+      <script
+        src="https://kit.fontawesome.com/81581fb069.js"
+        crossOrigin="anonymous"
+      ></script>
       <script src="vistaproducto.js"></script>
       <ToastContainer />
     </div>

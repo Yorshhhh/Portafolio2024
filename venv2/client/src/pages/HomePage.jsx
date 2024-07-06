@@ -7,6 +7,7 @@ import Modalidad from "../components/Modalidad";
 import Bienvenida from "../components/Bienvenida";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import CardProducts from "../components/CardProducts";
 
 import "../css/font-awesome.min.css";
 import "../css/bootstrap.min.css";
@@ -52,42 +53,12 @@ function HomePage() {
       <Bienvenida />
 
       {/* PRODUCTOS DESTACADOS */}
-      <section className="section" id="productos">
-        <div className="container">
-          <div className="row">
-            <h1>Productos Destacados!</h1>
-            {productos.map((producto) => (
-              <div
-                key={producto.cod_producto}
-                className="col-lg-4 col-md-6 col-12"
-                data-aos="fade-up"
-                data-aos-delay="400"
-              >
-                <div className="className-thumb">
-                  <img
-                    src="D_NQ_NP_978928-MLC50613847725_072022-O.jpg"
-                    className="img-fluid"
-                    alt="cerveza 1"
-                  />
-
-                  <div className="className-info">
-                    <h3 className="mb-1">{producto.nombre_producto}</h3>
-                    <span>
-                      <strong>Producto Disponible</strong>{" "}
-                    </span>
-                    <h2>Cod Producto: {producto.cod_producto}</h2>
-                    <p className="mt-3">
-                      Descripcion: {producto.descripcion_producto}
-                    </p>
-                    <p>Grado alcoholico: {producto.grado_alcoholico}</p>
-                    <p>Cantidad: {producto.litros} CC.</p>
-                    <p>Precio: ${producto.precio_producto}</p>
-                    <p>Stock: {producto.stock_producto}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      <section className="flex flex-col items-center my-8 mx-4">
+        <h1 className="font-bold text-2xl">Productos Destacados!</h1>
+        <div className="flex flex-wrap my-8 gap-8 justify-center">
+          {productos.map((producto) => (
+            <CardProducts producto={producto} />
+          ))}
         </div>
       </section>
       {/* CARRUSEL */}

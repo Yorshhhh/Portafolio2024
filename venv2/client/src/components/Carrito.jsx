@@ -1,5 +1,5 @@
 import { useCart } from "../context/CarritoContext";
-import '../css/Carrito.css'
+import "../css/CarritoPrepago.css";
 
 function Carrito() {
   const {
@@ -19,16 +19,17 @@ function Carrito() {
   };
 
   return (
-    <div>
-      <a className="cart-icon"
+    <div className="relative">
+      <a
+        className="cart-icon"
         onClick={() => setShowCart(!showCart)}
         style={{ color: "white", textDecoration: "none" }}
       >
         Carrito ({cartItems.length})
       </a>
       {showCart && (
-        <div id="carrito" className="cart-dropdown">
-          <table className="cart-table">
+        <div id="carrito" className="cart-dropdown absolute top-0 right-0 z-40 w-auto">
+          <table className="cart-vista">
             <thead>
               <tr>
                 <th>Imagen</th>
@@ -43,8 +44,9 @@ function Carrito() {
                 <tr key={producto.cod_producto}>
                   <td>
                     <img
-                      src="../../public/D_NQ_NP_978928-MLC50613847725_072022-O.jpg"
-                      alt=""
+                      src={producto.imagen} // Usar la URL real de la imagen del producto
+                      className="img-fluid"
+                      alt={`Imagen de ${producto.nombre_producto}`}
                       style={{ width: "50px" }}
                     />
                   </td>

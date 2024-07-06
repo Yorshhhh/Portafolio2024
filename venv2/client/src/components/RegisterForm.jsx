@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { registrarUsuario } from '../api/cerveceria_API'
-
+import { useNavigate, NavLink } from "react-router-dom";
+import { registrarUsuario } from "../api/cerveceria_API";
 
 function RegisterForm() {
   const [nombres, setNombre] = useState("");
@@ -278,9 +277,9 @@ function RegisterForm() {
               Registrarse
             </button>
           </form>
-          <a href="/" style={styles.link}>
+          <NavLink to="/" style={styles.link}>
             Volver al Inicio
-          </a>
+          </NavLink>
         </div>
       </div>
     </>

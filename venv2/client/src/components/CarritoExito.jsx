@@ -1,5 +1,5 @@
 import { useCart } from "../context/CarritoContext";
-import '../css/CarritoExito.css'
+import '../css/CarritoPrepago.css'
 
 function CarritoPrepago() {
   const { cartItems, calculateTotal, removeFromCart } = useCart();
@@ -8,7 +8,7 @@ function CarritoPrepago() {
     <>
       <div id="carritoExito" className="cart-dropdown">
         <h2>Resumen compra</h2>
-        <table className="cart-table">
+        <table className="cart-vista">
           <thead>
             <tr>
               <th>Imagen</th>
@@ -22,8 +22,9 @@ function CarritoPrepago() {
               <tr key={producto.cod_producto}>
                 <td>
                   <img
-                    src="D_NQ_NP_978928-MLC50613847725_072022-O.jpg"
-                    alt=""
+                    src={producto.imagen} // Usar la URL real de la imagen del producto
+                    className="img-fluid"
+                    alt={`Imagen de ${producto.nombre_producto}`}
                     style={{ width: "50px" }}
                   />
                 </td>

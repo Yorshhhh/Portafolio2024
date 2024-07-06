@@ -153,10 +153,9 @@ export default function AgregarProducto() {
         }
     };
 
-
     return (
         <>
-            <div style={styles.container}>
+            <div className='border-1 rounded-md shadow-md hover:shadow-xl' style={styles.container}>
                 <h1 style={styles.title}>Agregar Producto</h1>
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <div style={styles.formGroup}>

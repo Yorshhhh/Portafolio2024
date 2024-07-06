@@ -24,3 +24,18 @@
     background-color: #ddd;
   }
   
+  .estado-entregado {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Texto verde oscuro */
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-line; /* Para respetar los saltos de línea */
+  }
+  
+  .estado-pendiente {
+    background-color: #ffeeba; /* Naranja claro */
+    color: #856404; /* Texto naranja oscuro */
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-line; /* Para respetar los saltos de línea */
+  }

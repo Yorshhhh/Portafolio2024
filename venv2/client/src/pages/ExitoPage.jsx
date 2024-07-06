@@ -17,6 +17,7 @@ function ExitoPage() {
   const fechaPedido = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
+    // Cargar el carrito y el usuario del localStorage al montar el componente
     const userCarrito = localStorage.getItem("carrito");
     if (userCarrito) {
       try {
@@ -31,9 +32,7 @@ function ExitoPage() {
       console.warn("No existen productos en el carrito.");
       setError("No hay productos en el carrito.");
     }
-  }, []);
 
-  useEffect(() => {
     const userJson = localStorage.getItem("usuario");
     if (userJson) {
       try {
@@ -49,11 +48,26 @@ function ExitoPage() {
     }
   }, []);
 
-  const confirmTransaction = async () => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get("token_ws");
+  useEffect(() => {
+    const confirmTransaction = async () => {
+      const params = new URLSearchParams(location.search);
+      const token = params.get("token_ws");
 
-    if (token) {
+      if (!token) {
+        setError("Token no encontrado en la URL");
+        return;
+      }
+
+      if (!user) {
+        setError("Usuario no encontrado. No se puede procesar la transacción.");
+        return;
+      }
+
+      if (carro.length === 0) {
+        setError("Carrito vacío. No se puede procesar la transacción.");
+        return;
+      }
+
       try {
         const response = await axios.post(
           "http://localhost:3000/webpay_plus/commit",
@@ -63,40 +77,33 @@ function ExitoPage() {
         if (response.data.status === "success") {
           setTransactionData(response.data.viewData.commitResponse);
 
-          if (user) {
-            const nuevoPedido = {
-              fecha_pedido: fechaPedido,
-              id_usuario: user.id,
-            };
+          const nuevoPedido = {
+            fecha_pedido: fechaPedido,
+            id_usuario: user.id,
+          };
 
-            try {
-              const pedido = await registrarPedido(nuevoPedido);
-              console.log("Pedido registrado:", pedido);
+          try {
+            const pedido = await registrarPedido(nuevoPedido);
+            console.log("Pedido registrado:", pedido);
 
-              try {
-                const detalles = carro.map((producto) => ({
-                  cod_producto: producto.cod_producto,
-                  cod_pedido: pedido.cod_pedido,
-                  descuento: 0,
-                  cantidad: producto.quantity,
-                  precio_unitario: producto.precio_producto,
-                }));
+            const detalles = carro.map((producto) => ({
+              cod_producto: producto.cod_producto,
+              cod_pedido: pedido.cod_pedido,
+              descuento: 0,
+              cantidad: producto.quantity,
+              precio_unitario: producto.precio_producto,
+            }));
 
-                const promises = detalles.map((detalle) =>
-                  registrarDetalles(detalle)
-                );
-                await Promise.all(promises);
-                console.log("Todos los detalles de pedidos han sido registrados.");
-                localStorage.removeItem("carrito");
-                console.log("Carrito eliminado del localStorage.");
-              } catch (error) {
-                console.error("Error al registrar los detalles del pedido:", error);
-                setError("Error al registrar los detalles del pedido.");
-              }
-            } catch (error) {
-              console.error("Error al registrar pedido:", error);
-              setError("Error al registrar el pedido.");
-            }
+            const promises = detalles.map((detalle) =>
+              registrarDetalles(detalle)
+            );
+            await Promise.all(promises);
+            console.log("Todos los detalles de pedidos han sido registrados.");
+            localStorage.removeItem("carrito");
+            console.log("Carrito eliminado del localStorage.");
+          } catch (error) {
+            console.error("Error al registrar los detalles del pedido:", error);
+            setError("Error al registrar los detalles del pedido.");
           }
         } else {
           setError("Error en la transacción: " + JSON.stringify(response.data.commitResponse));
@@ -104,28 +111,17 @@ function ExitoPage() {
       } catch (error) {
         setError("Error confirmando la transacción: " + error.message);
       }
-    } else {
-      setError("Token no encontrado en la URL");
-    }
-  };
+    };
 
-  useEffect(() => {
+    // Confirmar la transacción solo si el usuario y el carrito están cargados
     if (user && carro.length > 0) {
       confirmTransaction();
-    } else if (!user) {
-      setError("Usuario no encontrado. No se puede procesar la transacción.");
-    } else if (carro.length === 0) {
-      setError("Carrito vacío. No se puede procesar la transacción.");
     }
   }, [location, user, carro]);
 
   return (
     <>
       <Navbar />
-      <hr />
-      <hr />
-      <hr />
-      <hr />
       <div className="center-container">
         {transactionData && (
           <div>

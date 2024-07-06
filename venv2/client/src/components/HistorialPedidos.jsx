@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { historialPedidos } from "../api/cerveceria_API";
 import "../css/PedidosPendientes.css";
 
@@ -7,6 +7,8 @@ const HistorialPedidos = () => {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
 
   useEffect(() => {
     const fetchHistorial = async () => {
@@ -19,8 +21,10 @@ const HistorialPedidos = () => {
         setUser(userParsed);
 
         const res = await historialPedidos(userParsed.id);
-        console.log("Datos recibidos:", res); // Debug: Verifica los datos recibidos
-        setHistorial(res);
+        console.log("Datos recibidos:", res);
+        setHistorial(res.results); // Actualiza los resultados de la página actual
+        setNextPage(res.next); // Actualiza el enlace a la siguiente página
+        setPrevPage(res.previous); // Actualiza el enlace a la página anterior
         setLoading(false);
       } catch (error) {
         console.error("Error al obtener el historial: ", error);
@@ -32,15 +36,22 @@ const HistorialPedidos = () => {
     fetchHistorial();
   }, []);
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
+  const handlePageChange = async (pageUrl) => {
+    try {
+      setLoading(true);
+      const response = await fetch(pageUrl);
+      const data = await response.json();
+      setHistorial(data.results); // Actualiza los resultados de la página actual
+      setNextPage(data.next); // Actualiza el enlace a la siguiente página
+      setPrevPage(data.previous); // Actualiza el enlace a la página anterior
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al cambiar de página: ", error);
+      setError("Error al cambiar de página.");
+      setLoading(false);
+    }
+  };
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  // Función para agrupar los pedidos por `cod_pedido_id`
   const agruparPedidos = (pedidos) => {
     const pedidosAgrupados = {};
 
@@ -65,96 +76,104 @@ const HistorialPedidos = () => {
   };
 
   const calcularTotalBoleta = (detalles) => {
+    // Verificar si detalles está definido y no es null
+    if (!detalles || detalles.length === 0) {
+      return "0,00 CLP"; // O cualquier valor predeterminado que desees mostrar
+    }
+
     let totalBoleta = 0;
     detalles.forEach((detalle) => {
       totalBoleta += detalle.total;
     });
+
     return totalBoleta.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
     });
   };
 
-  // Filtrar pedidos en pendientes y recibidos
-  const pedidosPendientes = historial.filter(
-    (pedido) => pedido.fecha_entrega === null
-  );
-  const pedidosRecibidos = historial.filter(
-    (pedido) => pedido.fecha_entrega !== null
-  );
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
 
-  const renderPedidos = (pedidos) => {
-    const pedidosAgrupados = agruparPedidos(pedidos);
-
-    return pedidosAgrupados.map((pedidoAgrupado, index) => (
-      <tr key={index}>
-        <td>{pedidoAgrupado.cod_pedido_id}</td>
-        <td>
-          <ul>
-            {pedidoAgrupado.detalles.map((detalle, idx) => (
-              <li key={idx}>
-                <strong>Codigo Producto:</strong> {detalle.cod_producto} <br />
-                <strong>Nombre Producto:</strong> {detalle.nombre_producto}{" "}
-                <br />
-                <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                <strong>Precio:</strong>{" "}
-                {detalle.precio_unitario.toLocaleString("es-CL", {
-                  style: "currency",
-                  currency: "CLP",
-                })}
-                <br />
-              </li>
-            ))}
-          </ul>
-        </td>
-        <td>{pedidoAgrupado.fecha_pedido}</td>
-        <td>{pedidoAgrupado.fecha_entrega || "Pendiente"}</td>
-        <td>
-          <strong>{calcularTotalBoleta(pedidoAgrupado.detalles)}</strong>{" "}
-        </td>
-      </tr>
-    ));
-  };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <>
       <div>
-        <h2>Pedidos Pendientes</h2>
-        {pedidosPendientes.length > 0 ? (
-          <table className="pedidos-table">
-            <thead>
-              <tr>
-                <th>Id Pedido</th>
-                <th>Detalle Pedido</th>
-                <th>Fecha de Pedido</th>
-                <th>Fecha de Entrega</th>
-                <th>Total del Pedido</th>
+        <h2>Historial de Pedidos</h2>
+        <table className="pedidos-table">
+          <thead>
+            <tr>
+              <th>Cod Pedido</th>
+              <th>Detalle Pedido</th>
+              <th>Fecha de Pedido</th>
+              <th>Fecha de Entrega</th>
+              <th>Total del Pedido</th>
+            </tr>
+          </thead>
+          <tbody>
+            {agruparPedidos(historial).map((pedidoAgrupado) => (
+              <tr key={pedidoAgrupado.cod_pedido_id}>
+                <td>{pedidoAgrupado.cod_pedido_id}</td>
+                <td>
+                  <ul>
+                    {pedidoAgrupado.detalles.map((detalle, index) => (
+                      <li key={index}>
+                        <strong>Codigo Producto:</strong> {detalle.cod_producto} <br />
+                        <strong>Nombre Producto:</strong> {detalle.nombre_producto} <br />
+                        <strong>Cantidad:</strong> {detalle.cantidad} <br />
+                        <strong>Precio:</strong>{" "}
+                        {detalle.precio_unitario.toLocaleString("es-CL", {
+                          style: "currency",
+                          currency: "CLP",
+                        })}
+                        <br />
+                      </li>
+                    ))}
+                    <li>
+                      Total:{" "}
+                      <strong>
+                        {calcularTotalBoleta(pedidoAgrupado.detalles)}
+                      </strong>
+                    </li>
+                  </ul>
+                </td>
+                <td>{pedidoAgrupado.fecha_pedido}</td>
+                <td
+                  className={
+                    pedidoAgrupado.fecha_entrega
+                      ? "estado-entregado"
+                      : "estado-pendiente"
+                  }
+                >
+                  {pedidoAgrupado.fecha_entrega ? (
+                    <>
+                      ¡Entregado! <br />
+                      Fecha: {pedidoAgrupado.fecha_entrega}
+                    </>
+                  ) : (
+                    "Pendiente"
+                  )}
+                </td>
+                <td>
+                  <strong>{calcularTotalBoleta(pedidoAgrupado.detalles)}</strong>{" "}
+                </td>
               </tr>
-            </thead>
-            <tbody>{renderPedidos(pedidosPendientes)}</tbody>
-          </table>
-        ) : (
-          <p>No hay pedidos pendientes.</p>
+            ))}
+          </tbody>
+        </table>
+        {prevPage && (
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+          </button>
         )}
-      </div>
-
-      <div>
-        <h2>Pedidos Recibidos</h2>
-        {pedidosRecibidos.length > 0 ? (
-          <table className="pedidos-table">
-            <thead>
-              <tr>
-                <th>Id Pedido</th>
-                <th>Detalle Pedido</th>
-                <th>Fecha de Pedido</th>
-                <th>Fecha de Entrega</th>
-                <th>Total del Pedido</th>
-              </tr>
-            </thead>
-            <tbody>{renderPedidos(pedidosRecibidos)}</tbody>
-          </table>
-        ) : (
-          <p>No hay pedidos recibidos.</p>
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+          </button>
         )}
       </div>
     </>

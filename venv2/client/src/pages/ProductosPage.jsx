@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getAllProductos } from "../api/cerveceria_API";
-import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CarritoContext";
 import "../css/styleproducto.css";
+import CardProducts from "../components/CardProducts";
 
 function ProductosPage() {
   const {
@@ -17,6 +17,7 @@ function ProductosPage() {
   } = useCart();
 
   const [productos, setProductos] = useState([]);
+  const [sortCriteria, setSortCriteria] = useState("default");
 
   const clearCartHandler = () => {
     clearCart(setCartItems, setShowCart);
@@ -31,9 +32,19 @@ function ProductosPage() {
     loadProductos();
   }, []);
 
-  // Función para manejar clics en el botón de agregar al carrito
-  const handleAgregarCarritoClick = (producto) => {
-    addToCart(producto); // Llama a addToCart con el producto
+  const handleSortChange = (e) => {
+    setSortCriteria(e.target.value);
+  };
+
+  const sortProducts = (products, criteria) => {
+    switch (criteria) {
+      case "price-asc":
+        return products.sort((a, b) => a.precio_producto - b.precio_producto);
+      case "price-desc":
+        return products.sort((a, b) => b.precio_producto - a.precio_producto);
+      default:
+        return products;
+    }
   };
 
   return (
@@ -46,42 +57,20 @@ function ProductosPage() {
         setShowCart={setShowCart}
         clearCartHandler={clearCartHandler}
       />
-
-      <div className="cont">
-        <div className="row">
-          {productos.map((producto) => (
-            <div
-              key={producto.cod_producto}
-              className="col-lg-4 col-md-6 col-12"
-              data-aos="fade-up"
-              data-aos-delay="400"
-            >
-              <Link to={`/producto/${producto.cod_producto}`}>
-                <div className="className-thumb">
-                  <div className="imagen">
-                    <img
-                      src={producto.imagen} // Usar la URL real de la imagen del producto
-                      className="img-fluid"
-                      alt={`Imagen de ${producto.nombre_producto}`}
-                    />
-                  </div>
-
-                  <div className="className-info">
-                    <h3 className="mb-1">{producto.nombre_producto}</h3>
-                    <h2>Cod Producto: {producto.cod_producto}</h2>
-                    <p className="mt-3">
-                      Descripcion: {producto.descripcion_producto}
-                    </p>
-                    <p>Grado alcoholico: {producto.grado_alcoholico}</p>
-                    <p>Cantidad: {producto.litros} CC.</p>
-                    <p>Precio: ${producto.precio_producto}</p>
-                    <p>Stock: {producto.stock_producto}</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          ))}
-        </div>
+      <h1 className="text-black font-bold flex justify-center border-1 rounded-md">
+        Todos los productos
+      </h1>
+      <div className="flex justify-start mb-4">
+        <select onChange={handleSortChange} value={sortCriteria}>
+          <option value="default">Ordenar por...</option>
+          <option value="price-asc">Precio: Menor a Mayor</option>
+          <option value="price-desc">Precio: Mayor a Menor</option>
+        </select>
+      </div>
+      <div className="flex flex-wrap gap-4 justify-center mt-4">
+        {sortProducts(productos, sortCriteria).map((producto) => (
+          <CardProducts key={producto.cod_producto} producto={producto} />
+        ))}
       </div>
     </>
   );

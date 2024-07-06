@@ -82,18 +82,6 @@ class Detalle_Pedido(models.Model):
     def __str__(self):
         return f"Detalle del pedido {self.cod_pedido} para el producto {self.cod_producto}"
 
-class HistorialPedido(models.Model):
-    codigo_producto = models.IntegerField()
-    nombre_producto = models.CharField(max_length=100)
-    cantidad = models.IntegerField()
-    precio_unitario = models.IntegerField()
-    total = models.IntegerField()
-    fecha_pedido = models.DateField()
-    fecha_entrega = models.DateField()
-
-    class Meta:
-        managed = False  # No queremos que Django intente crear esta tabla
-        db_table = 'historial_pedidos'  # Nombre de la vista en la base de datos
 
 class GananciasProducto(models.Model):
     cod_producto = models.IntegerField(primary_key=True)
@@ -118,6 +106,23 @@ class PedidoPendiente(models.Model):
     fecha_pedido = models.DateField()
 
     class Meta:
-        managed: False
+        managed =  False
         db_table = 'view_pedidos_pendientes'
 
+class PedidoEntregado(models.Model):
+    cod_pedido = models.IntegerField(primary_key=True)
+    nombre_cliente = models.CharField(max_length=255)
+    correo = models.EmailField()
+    telefono = models.CharField(max_length=20)
+    id_detalle_pedido = models.CharField(max_length=255)
+    cod_producto = models.CharField(max_length=255)
+    nombre_producto = models.CharField(max_length=255)
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_pedido = models.DateTimeField()
+    fecha_entrega = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'view_pedidos_entregados'

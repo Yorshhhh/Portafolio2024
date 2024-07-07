@@ -24,8 +24,9 @@ function CarritoPrepago() {
               <tr key={producto.cod_producto}>
                 <td>
                   <img
-                    src="D_NQ_NP_978928-MLC50613847725_072022-O.jpg"
-                    alt=""
+                    src={producto.imagen} // Usar la URL real de la imagen del producto
+                    className="img-fluid"
+                    alt={`Imagen de ${producto.nombre_producto}`}
                     style={{ width: "50px" }}
                   />
                 </td>

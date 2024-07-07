@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import useLocalStorage from '../hooks/useLocalStorage'
+import { toast } from 'react-toastify'; // Importar Toast
 
 const CartContext = createContext();
 
@@ -19,24 +20,19 @@ export const CartProvider = ({ children }) => {
   const [showCart, setShowCart] = useState(false);
   const [deliveryCost, setDeliveryCost] = useState(0);
 
-  const addToCart = (item, quantity ) => {
-    const existingItemIndex = cartItems.findIndex(
-      (cartItem) => cartItem.cod_producto === item.cod_producto
-    );
-
-    if (existingItemIndex !== -1) {
-      const updatedCart = cartItems.map((cartItem, index) =>
-        index === existingItemIndex
-          ? { ...cartItem, quantity: cartItem.quantity + quantity }
-          : cartItem
-      );
-      setCartItems(updatedCart);
-      localStorage.setItem("carrito", JSON.stringify(updatedCart));
-    } else {
-      const updatedCart = [...cartItems, { ...item, quantity }];
-      setCartItems(updatedCart);
-      localStorage.setItem("carrito", JSON.stringify(updatedCart));
-    }
+  const addToCart = (producto, quantity) => {
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => item.cod_producto === producto.cod_producto);
+      if (existingItem) {
+        return prevItems.map(item =>
+          item.cod_producto === producto.cod_producto
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        return [...prevItems, { ...producto, quantity }];
+      }
+    });
   };
 
   useEffect(() => {

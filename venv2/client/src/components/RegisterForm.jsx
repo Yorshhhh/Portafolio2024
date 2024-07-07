@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { registrarUsuario } from '../api/cerveceria_API'
-
+import { useNavigate, NavLink } from "react-router-dom";
+import { registrarUsuario } from "../api/cerveceria_API";
 
 function RegisterForm() {
   const [nombres, setNombre] = useState("");
@@ -137,12 +136,13 @@ function RegisterForm() {
       padding: "10px 15px",
       border: "none",
       borderRadius: "4px",
-      background: "#000",
-      color: "#f00",
+      background: "#f39c12", // Cambiado a naranja
+      color: "white",
       cursor: "pointer",
       textAlign: "center",
       width: "100%",
       marginTop: "10px",
+      transition: "background-color 0.3s, color 0.3s", // Añadida transición
     },
     link: {
       display: "block",
@@ -278,9 +278,12 @@ function RegisterForm() {
               Registrarse
             </button>
           </form>
-          <a href="/" style={styles.link}>
+          <NavLink to="/login" style={styles.link}>
+            Iniciar Sesion
+          </NavLink>
+          <NavLink to="/" style={styles.link}>
             Volver al Inicio
-          </a>
+          </NavLink>
         </div>
       </div>
     </>

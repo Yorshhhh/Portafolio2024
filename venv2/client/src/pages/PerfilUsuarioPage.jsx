@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { actualizarDireccion } from "../api/cerveceria_API"; // Importa la función de Axios
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import AgregarProducto from "../components/AgregarProducto";
 import RegisterAdmin from "../components/RegisterAdmin";
@@ -8,26 +6,26 @@ import ListarProductos from "../components/ListarProductos";
 import Ganancias from "../components/GananciasAdmin";
 import HistorialPedidos from "../components/HistorialPedidos";
 import PedidosPendientes from "../components/PedidosPendientes";
-
+import PedidosEntregados from "../components/PedidosEntregados";
 import "../css/PerfilUsuario.css";
+import UserCard from "../components/UserCard";
 
 function PerfilUsuarioPage() {
-  const [user, setUser] = useState(null); // Cambiado a null inicialmente
+  const [user, setUser] = useState(null);
   const [carro, setCarrito] = useState([]);
-  const [showAgregarProducto, setShowAgregarProducto] = useState(false);
-  const [showCrearAdmin, setShowCrearAdmin] = useState(false);
-  const [showModificarProducto, setModificarProducto] = useState(false);
-  const [showNonStaffContent, setShowNonStaffContent] = useState(false);
-  const [showGanancias, setMostrarGanancias] = useState(false);
-  const [showHistorial, setShowHistorialPedido] = useState(false);
-  const [showPendientes, setShowPendientes] = useState(false);
-  const [editDireccion, setEditDireccion] = useState(false);
-  const [direccion, setDireccion] = useState("");
-  const [loading, setLoading] = useState(false);
+  // Estado para mostrar/ocultar diferentes secciones
+  const [showSection, setShowSection] = useState({
+    infoUser: false,
+    agregarProducto: false,
+    crearAdmin: false,
+    modificarProducto: false,
+    nonStaffContent: false,
+    ganancias: false,
+    historial: false,
+    pendientes: false,
+    entregados: false,
+  });
 
-  const history = useNavigate();
-
-  // Cargar usuario desde localStorage al cargar la página
   useEffect(() => {
     const userJson = localStorage.getItem("usuario");
     try {
@@ -37,22 +35,19 @@ function PerfilUsuarioPage() {
     }
   }, []);
 
-  //Cargar info del carrito desde el localStorage
   useEffect(() => {
     const userCarrito = localStorage.getItem("carrito");
     if (userCarrito) {
       try {
         const carritoParsed = JSON.parse(userCarrito);
         setCarrito(carritoParsed);
-
         const detalles = carritoParsed.map((producto) => ({
           cod_producto: producto.cod_producto,
           descuento: 0,
           cantidad: producto.quantity,
           precio_unitario: producto.precio_producto,
         }));
-        console.log("Detalles del carrito");
-        console.log(detalles);
+        console.log("Detalles del carrito", detalles);
       } catch (error) {
         console.error("Error al parsear el carrito del localStorage:", error);
       }
@@ -72,224 +67,154 @@ function PerfilUsuarioPage() {
     );
   }
 
-  // Función para manejar el cambio en el campo de dirección
-  const handleDireccionChange = (e) => {
-    setDireccion(e.target.value);
-  };
-
-  // Función para guardar la dirección editada y enviarla al servidor
-  const handleGuardarDireccionClick = async () => {
-    if (direccion.trim()) {
-      setLoading(true); // Muestra un indicador de carga
-
-      try {
-        const updatedUser = await actualizarDireccion(
-          user.id,
-          direccion.trim()
-        );
-        // Actualiza la dirección localmente
-        setUser({
-          ...user,
-          direccion: updatedUser.data.direccion, // Suponiendo que la respuesta contiene 'direccion'
-        });
-        localStorage.setItem(
-          "usuario",
-          JSON.stringify({
-            ...user,
-            direccion: updatedUser.data.direccion, // Actualiza también en localStorage
-          })
-        );
-        setEditDireccion(false); // Ocultar el input de edición después de guardar
-        alert("Dirección actualizada correctamente.");
-        history("/perfil"); // Redirige al perfil después de guardar
-      } catch (error) {
-        console.error("Error al actualizar la dirección:", error);
-        alert("Ocurrió un error al actualizar la dirección.");
-      } finally {
-        setLoading(false); // Oculta el indicador de carga
-      }
-    } else {
-      alert("Por favor, ingresa una dirección válida.");
-    }
-  };
-
-  // Función para manejar el clic en el botón para editar dirección
-  const handleEditarDireccionClick = () => {
-    setEditDireccion(true); // Mostrar el input de edición
-    setDireccion(user.direccion || ""); // Cargar la dirección actual si existe
-  };
-
-  // Funciones para manejar los clics en los botones de acciones
-  const handleAgregarProductoClick = () => {
-    setShowAgregarProducto((prev) => !prev);
-  };
-
-  const handleCrearAdminClick = () => {
-    setShowCrearAdmin((prev) => !prev);
-  };
-
-  const handleModificarProducto = () => {
-    setModificarProducto((prev) => !prev);
-  };
-
-  const handleNonStaffContentClick = () => {
-    setShowNonStaffContent((prev) => !prev);
-  };
-
-  const handleMostrarGanancias = () => {
-    setMostrarGanancias((prev) => !prev);
-  };
-
-  const handleHistorialPedidos = () => {
-    setShowHistorialPedido((prev) => !prev);
-  };
-
-  const handleMostrarPedidos = () => {
-    setShowPendientes((prev) => !prev);
+  const toggleSection = (section) => {
+    setShowSection((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
   };
 
   return (
     <>
-      <hr />
-      <hr />
-      <hr />
       <Navbar />
       <div className="user-profile-center-container">
-        <div className="user-profile-center-container">
-          <h1>Información del usuario</h1>
-          <div className="user-profile-card">
-            <h2>Nombres: {user.nombres}</h2>
-            <h2>Apellidos: {user.apellidos}</h2>
-            <h2>Correo: {user.correo}</h2>
-            <h2>Teléfono: {user.telefono}</h2>
-            <h2>Dirección: </h2>
-            {editDireccion ? (
-              // Mostrar input de edición si se está editando la dirección
-              <div className="user-profile-direccion-input-container">
-                <input
-                  type="text"
-                  placeholder="Ingresa tu dirección"
-                  value={direccion}
-                  onChange={handleDireccionChange}
-                  className="user-profile-direccion-input"
-                />
-                <button
-                  onClick={handleGuardarDireccionClick}
-                  className="user-profile-button user-profile-btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? "Guardando..." : "Guardar dirección"}
-                </button>
+        <Ganancias />
+        <h1>Contenedor Principal</h1>
+
+        {user.is_staff ? (
+          <div className="user-profile-staff-actions flex flex-col items-center justify-center">
+            <h1>Funciones del administrador</h1>
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("infoUser")}
+              >
+                {showSection.infoUser
+                  ? "Ocultar Informacion del Usuario"
+                  : "Informacion del Usuario"}
+              </button>
+
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("agregarProducto")}
+              >
+                {showSection.agregarProducto
+                  ? "Ocultar Agregar Producto"
+                  : "Agregar Producto"}
+              </button>
+
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("crearAdmin")}
+              >
+                {showSection.crearAdmin
+                  ? "Ocultar Crear Administrador"
+                  : "Crear Administrador"}
+              </button>
+
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("modificarProducto")}
+              >
+                {showSection.modificarProducto
+                  ? "Ocultar Modificar Producto"
+                  : "Modificar Productos"}
+              </button>
+
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("ganancias")}
+              >
+                {showSection.ganancias
+                  ? "Ocultar Ventas por Producto"
+                  : "Mostrar Ventas por Producto"}
+              </button>
+
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("pendientes")}
+              >
+                {showSection.pendientes
+                  ? "Ocultar Pedidos Pendientes"
+                  : "Mostrar Pedidos Pendientes"}
+              </button>
+              <button
+                className="user-profile-button user-profile-staff-button py-1 px-2 text-sm rounded-md w-32 h-8"
+                style={{ width: "fit-content" }}
+                onClick={() => toggleSection("entregados")}
+              >
+                {showSection.entregados
+                  ? "Ocultar Pedidos Entregados"
+                  : "Mostrar Pedidos Entregados"}
+              </button>
+            </div>
+            {showSection.infoUser && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <UserCard user={user} />
               </div>
-            ) : (
-              // Mostrar la dirección y botón de editar si está proporcionada
-              <div>
-                <h2>{user.direccion || "Dirección no proporcionada"}</h2>
-                <button
-                  onClick={handleEditarDireccionClick}
-                  className="user-profile-button user-profile-btn-secondary"
-                >
-                  Editar dirección
-                </button>
+            )}
+
+            {showSection.agregarProducto && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <AgregarProducto />
+              </div>
+            )}
+
+            {showSection.crearAdmin && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <RegisterAdmin />
+              </div>
+            )}
+
+            {showSection.modificarProducto && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                {" "}
+                <ListarProductos />{" "}
+              </div>
+            )}
+
+            {showSection.ganancias && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                {" "}
+                <Ganancias />{" "}
+              </div>
+            )}
+
+            {showSection.pendientes && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <PedidosPendientes />{" "}
+              </div>
+            )}
+
+            {showSection.entregados && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <PedidosEntregados />
               </div>
             )}
           </div>
-        </div>
-
-        {user.is_staff ? (
-          // Si el usuario es staff
-          <div className="user-profile-staff-actions">
-            <h1>Funciones del administrador</h1>
-            <button
-              className="user-profile-button user-profile-staff-button"
-              onClick={handleAgregarProductoClick}
-            >
-              {showAgregarProducto
-                ? "Ocultar Agregar Producto"
-                : "Agregar Producto"}
-            </button>
-            <div className="content-container">
-              {showAgregarProducto && <AgregarProducto />}
-            </div>
-
-            <button
-              className="user-profile-button user-profile-staff-button"
-              onClick={handleCrearAdminClick}
-            >
-              {showCrearAdmin
-                ? "Ocultar Crear Administrador"
-                : "Crear Administrador"}
-            </button>
-            <div className="content-container">
-              {showCrearAdmin && <RegisterAdmin />}
-            </div>
-
-            <button
-              className="user-profile-button user-profile-staff-button"
-              onClick={handleModificarProducto}
-            >
-              {showModificarProducto
-                ? "Ocultar Modificar Producto"
-                : "Modificar Productos"}
-            </button>
-            <div className="content-container">
-              {showModificarProducto && <ListarProductos />}
-            </div>
-            <button
-              className="user-profile-button user-profile-staff-button"
-              onClick={handleMostrarGanancias}
-            >
-              {showHistorial
-                ? "Ocultar Ganancias por Producto"
-                : "Mostrar Ganancias por Producto"}
-            </button>
-            <div className="content-container">
-              {showGanancias && <Ganancias />}
-            </div>
-            <button
-              className="user-profile-button user-profile-staff-button"
-              onClick={handleMostrarPedidos}
-            >
-              {showPendientes
-                ? "Ocultar Pedidos Pendientes"
-                : "Mostrar Pedidos Pendientes"}
-            </button>
-            <div className="content-container">
-              {showPendientes && <PedidosPendientes />}
-            </div>
-          </div>
         ) : (
-          // Si el usuario no es staff
           <div className="non-staff-actions user-profile-card">
             <h1>Funciones del usuario</h1>
             <button
               className="non-staff-button"
-              onClick={handleNonStaffContentClick}
+              style={{ width: "fit-content" }}
+              onClick={() => toggleSection("historial")}
             >
-              {showNonStaffContent
-                ? "Ocultar Opciones de Usuario"
-                : "Mostrar Opciones de Usuario"}
-            </button>
-
-            <div className="content-container">
-              {showNonStaffContent && (
-                <div>
-                  <h1>No eres staff</h1>
-                </div>
-              )}
-            </div>
-
-            <button
-              className="non-staff button"
-              onClick={handleHistorialPedidos}
-            >
-              {showNonStaffContent
+              {showSection.historial
                 ? "Ocultar Historial de Pedidos"
                 : "Mostrar Historial de Pedidos"}
             </button>
-            <div className="content-container">
-              {showHistorial && <HistorialPedidos />}
-            </div>
+            {showSection.historial && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <HistorialPedidos />
+              </div>
+            )}
           </div>
         )}
       </div>

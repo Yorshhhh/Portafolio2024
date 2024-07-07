@@ -1,6 +1,7 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import Group
+from django.db.utils import OperationalError
 from django.db import connection
 from rest_framework import viewsets,status
 from rest_framework.views import APIView
@@ -10,7 +11,7 @@ from rest_framework.decorators import api_view,action
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
-from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente
+from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente,PedidoEntregado
 
 # Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
@@ -101,6 +102,45 @@ class CustomAuthToken(ObtainAuthToken):
 
         return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
 
+class VentasMensualesView(APIView):
+    def get(self, request):
+        month_year = request.query_params.get('mes')  # Parámetro para el mes en formato MM-YYYY
+
+        if not month_year:
+            return Response({"error": "Falta el parámetro 'mes' en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega,'MM-YYYY') AS mes_solicitado,
+                           NVL(SUM(a.precio_unitario * a.cantidad), 0) AS Total
+                    FROM cerveceria_detalle_pedido a
+                        JOIN cerveceria_producto b ON (a.cod_producto_id = b.cod_producto)
+                        JOIN cerveceria_pedido c ON (a.cod_pedido_id = c.cod_pedido)
+                    WHERE c.fecha_entrega IS NOT NULL AND TO_CHAR(c.fecha_entrega,'MM-YYYY') = %s
+                    GROUP BY b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega, 'MM-YYYY')
+                    ORDER BY b.cod_producto
+                """, [month_year])
+
+                ventas_mensuales = cursor.fetchall()
+
+                if not ventas_mensuales:
+                    return Response({"error": "No se encontraron ventas para el mes especificado."}, status=status.HTTP_404_NOT_FOUND)
+
+                ventas_data = []
+                for venta in ventas_mensuales:
+                    venta_dict = {
+                        "cod_producto": venta[0],
+                        "nombre_producto": venta[1],
+                        "mes_solicitado": venta[2],
+                        "total": venta[3],
+                    }
+                    ventas_data.append(venta_dict)
+                return Response(ventas_data, status=status.HTTP_200_OK)
+
+        except OperationalError as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class VentasProductoView(APIView):
     def get(self, request):
         try:
@@ -117,6 +157,32 @@ class VentasProductoView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class PedidoEntregadoView(APIView):
+    def get(self, request):
+        try:
+            pedidos_entregados = PedidoEntregado.objects.all()
+            pedidos_data = [
+                {
+                    "cod_pedido": pedido.cod_pedido,
+                    "nombre_cliente": pedido.nombre_cliente,
+                    "correo": pedido.correo,
+                    "telefono": pedido.telefono,
+                    "id_detalle_pedido": pedido.id_detalle_pedido,
+                    "cod_producto": pedido.cod_producto,
+                    "nombre_producto": pedido.nombre_producto,
+                    "cantidad": pedido.cantidad,
+                    "precio_unitario": pedido.precio_unitario,
+                    "total": pedido.total,
+                    "fecha_pedido": pedido.fecha_pedido,
+                    "fecha_entrega": pedido.fecha_entrega,
+                }
+                for pedido in pedidos_entregados
+            ]
+            return Response(pedidos_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+               
 class PedidoPendienteView(APIView):
     def get(self, request):
         try:
@@ -209,6 +275,13 @@ class Detalle_PedidoView(viewsets.ModelViewSet):
 class PedidoView(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
     queryset = Pedido.objects.all()
+
+    def get_queryset(self):
+        id_usuario_id = self.request.query_params.get('id_usuario_id')
+        if id_usuario_id:
+            return Pedido.objects.filter(id_usuario_id=id_usuario_id)
+        else:
+            return Pedido.objects.none()
 
 @api_view(['POST'])
 def update_stock(request):

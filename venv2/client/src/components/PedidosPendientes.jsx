@@ -9,13 +9,18 @@ function PedidosPendientes() {
   const [p_pendientes, setPendientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+
   const fechaEntrega = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const fetchPendientes = async () => {
       try {
         const data = await obtenerPedidosPendientes();
-        setPendientes(data);
+        setPendientes(data.results);
+        setNextPage(data.next)
+        setPrevPage(data.previous)
         setLoading(false);
       } catch (error) {
         console.error("Error al obtener los pedidos pendientes: ", error);
@@ -25,6 +30,22 @@ function PedidosPendientes() {
     };
     fetchPendientes();
   }, []);
+
+  const handlePageChange = async (pageUrl) => {
+    try {
+      setLoading(true);
+      const response = await fetch(pageUrl);
+      const data = await response.json();
+      setPendientes(data.results); // Actualiza los resultados de la página actual
+      setNextPage(data.next); // Actualiza el enlace a la siguiente página
+      setPrevPage(data.previous); // Actualiza el enlace a la página anterior
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al cambiar de página: ", error);
+      setError("Error al cambiar de página.");
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return <div>Cargando...</div>;
@@ -93,16 +114,25 @@ function PedidosPendientes() {
     });
   };
 
+    // Función para formatear la fecha
+    const formatearFecha = (fechaISO) => {
+      const fecha = new Date(fechaISO);
+      const dia = String(fecha.getDate()).padStart(2, '0');
+      const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses en JavaScript comienzan desde 0.
+      const año = fecha.getFullYear();
+      return `${dia}-${mes}-${año}`;
+    };
+
   return (
     <div>
       <h2>Pedidos Pendientes</h2>
       <table className="pedidos-table">
         <thead>
           <tr>
+            <th>Cod Pedido</th>
             <th>Nombre Cliente</th>
             <th>Correo</th>
             <th>Teléfono</th>
-            <th>Cod Pedido</th>
             <th>Detalles</th>
             <th>Fecha Pedido</th>
             <th>Confirmar Pedido</th>
@@ -111,10 +141,11 @@ function PedidosPendientes() {
         <tbody>
           {agruparPedidos(p_pendientes).map((pedidoAgrupado) => (
             <tr key={pedidoAgrupado.cod_pedido_id}>
+              <td>{pedidoAgrupado.cod_pedido_id}</td>
               <td>{pedidoAgrupado.nombre_cliente}</td>
               <td>{pedidoAgrupado.correo}</td>
               <td>{pedidoAgrupado.telefono}</td>
-              <td>{pedidoAgrupado.cod_pedido_id}</td>
+
               <td>
                 <ul>
                   {pedidoAgrupado.detalles.map((detalle, index) => (
@@ -136,7 +167,7 @@ function PedidosPendientes() {
                   </li>
                 </ul>
               </td>
-              <td>{pedidoAgrupado.fecha_pedido}</td>
+              <td>{formatearFecha(pedidoAgrupado.fecha_pedido)}</td> {/* Aquí se formatea la fecha */}
               <td>
                 <button
                   onClick={() => handleConfirmar(pedidoAgrupado)}
@@ -149,6 +180,16 @@ function PedidosPendientes() {
           ))}
         </tbody>
       </table>
+      {prevPage && (
+        <button onClick={() => handlePageChange(prevPage)}>
+          Página Anterior
+        </button>
+      )}
+      {nextPage && (
+        <button onClick={() => handlePageChange(nextPage)}>
+          Siguiente Página
+        </button>
+      )}
     </div>
   );
 }

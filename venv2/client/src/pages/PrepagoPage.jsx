@@ -93,9 +93,6 @@ function Prepago() {
 
   return (
     <>
-      <hr />
-      <hr />
-      <hr />
       <Navbar
         cartItems={cartItems}
         removeFromCart={removeFromCart}

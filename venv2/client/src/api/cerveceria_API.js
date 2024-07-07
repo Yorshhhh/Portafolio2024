@@ -4,8 +4,8 @@ const cerveceriaAPI = axios.create({
   baseURL: "http://127.0.0.1:8000/",
   timeout: 10000, // Tiempo de espera opcional, ajusta según sea necesario
   headers: {
-    'Content-Type': 'application/json',
-  }
+    "Content-Type": "application/json",
+  },
 });
 // Agregar un interceptor para incluir el token en todas las solicitudes
 cerveceriaAPI.interceptors.request.use(
@@ -46,9 +46,11 @@ export const actualizarDireccion = (id, nuevaDireccion) => {
   return cerveceriaAPI.patch(`/usuarios/${id}/`, { direccion: nuevaDireccion });
 };
 
-export const confirmarPedido = (cod_pedido_id, fecha_Entregado) =>{
-  return cerveceriaAPI.patch(`/pedidos/${cod_pedido_id}/`, { fecha_entrega: fecha_Entregado})
-}
+export const confirmarPedido = (cod_pedido_id, fecha_Entregado) => {
+  return cerveceriaAPI.patch(`/pedidos/${cod_pedido_id}/`, {
+    fecha_entrega: fecha_Entregado,
+  });
+};
 
 export const registrarPedido = async (pedido) => {
   try {
@@ -70,17 +72,17 @@ export const registrarDetalles = async (detalles) => {
 
 export const obtenerGananciasPorProducto = async () => {
   try {
-    const response = await cerveceriaAPI.get('/ganancias_producto/');
+    const response = await cerveceriaAPI.get("/ganancias_producto/");
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const historialPedidos = async(id) => {
+export const historialPedidos = async (id) => {
   try {
     const response = await cerveceriaAPI.get("/historial_pedidos/", {
-      params: { id: id }
+      params: { id: id },
     });
     return response.data;
   } catch (error) {
@@ -88,14 +90,34 @@ export const historialPedidos = async(id) => {
   }
 };
 
-export const obtenerPedidosPendientes = async () =>{
+export const ventasMensuales = async(mes) =>{
   try{
-    const response = await cerveceriaAPI.get('/pedidos_pendientes/')
-    return response.data
-  }catch(error){
+    const response = await cerveceriaAPI.get(("/ventas_mensuales/"), {
+      params: {mes: mes},
+    })
+    return response.data;
+  }catch(error)
+{
+  throw error;
+}}
+
+export const obtenerPedidosPendientes = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/pedidos_pendientes/");
+    return response.data;
+  } catch (error) {
     throw error;
   }
-}
+};
+
+export const obtenerPedidosEntregados = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/pedidos_entregados/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 /* export const actualizarDireccion = (correoUsuario, nuevaDireccion) => {
   return axios.put(`http://localhost:8000/usuarios/actualizar-direccion/${correoUsuario}/`, { direccion: nuevaDireccion })
       .then(response => {

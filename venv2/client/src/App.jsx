@@ -9,8 +9,11 @@ import PerfilUsuarioPage from "./pages/PerfilUsuarioPage";
 import VistaProducto from "./pages/VistaProducto";
 import AgregarProductoPage from "./pages/AgregarProductoPage";
 import ListarProductosPage from './pages/ListarProductosPage'; // Importar el nuevo componente
-import NotFound from './components/NotFound'
-
+import NotFound from './components/NotFound';
+import Verpedidos from './pages/verpedidos';
+import AdministarUsuario from './pages/AdministarUsuario';
+import AdministrarProducto from './pages/AdministrarProducto';
+import HistorialPedidosPage from "./pages/HistorialPedidosPage";
 function App() {
   return (
     <Routes>
@@ -26,6 +29,10 @@ function App() {
       <Route path="/agregar-producto" element={<AgregarProductoPage />} />
       <Route path="/listar-productos" element={<ListarProductosPage/>} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/pedidos" element={<Verpedidos/>}/>
+      <Route path="/administrar-usuario" element={<AdministarUsuario/>}/>
+      <Route path="/administrar-productos" element={<AdministrarProducto/>}/>
+      <Route path="/historial-pedidos" element={<HistorialPedidosPage/>}/>
     </Routes>
   );
 }  

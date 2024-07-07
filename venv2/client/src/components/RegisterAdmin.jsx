@@ -298,9 +298,7 @@ function RegisterAdmin() {
               Registrar Administrador
             </button>
           </form>
-          <a href="/" style={styles.link}>
-            Volver al Inicio
-          </a>
+          
         </div>
       </div>
     </>

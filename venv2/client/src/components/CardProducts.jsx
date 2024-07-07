@@ -1,8 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useCart } from "../context/CarritoContext";
 
 function CardProducts({ producto }) {
+  const { addToCart } = useCart();
+
   CardProducts.propTypes = {
     producto: PropTypes.object,
   };
@@ -23,8 +26,10 @@ function CardProducts({ producto }) {
         <div className="mb-2">
           <h3 className="mb-1">{producto.nombre_producto}</h3>
           <p>Precio: ${producto.precio_producto}</p>
+          <p>Stock: {producto.stock_producto}</p>
         </div>
-        <button className="w-full bg-orange-400 py-2 px-6 text-white text-lg font-bold rounded-bt-md hover:bg-orange-600">
+        <button className="w-full bg-orange-400 py-2 px-6 text-white text-lg font-bold rounded-bt-md hover:bg-orange-600"
+        onClick={() => addToCart(producto, 1)}>
           Agregar al carrito
         </button>
       </div>

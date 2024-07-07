@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { obtenerGananciasPorProducto } from "../api/cerveceria_API";
+import { ventasMensuales } from "../api/cerveceria_API";
 import {
   BarChart,
   Bar,
@@ -38,23 +38,49 @@ function GananciasAdmin() {
   const [ganancias, setGanancias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedProducts, setSelectedProducts] = useState(""); // Estado para el producto seleccionado
+  const [selectedMonth, setSelectedMonth] = useState(""); // Estado para el mes seleccionado
+  const [tempMonth, setTempMonth] = useState(""); // Estado temporal para el input de fecha
+  const [selectedProducts, setSelectedProducts] = useState([]); // Estado para el producto seleccionado
 
   useEffect(() => {
-    const fetchGanancias = async () => {
-      try {
-        const data = await obtenerGananciasPorProducto();
-        setGanancias(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error al obtener las ganancias: ", error);
-        setError("Error al cargar las ganancias por producto.");
-        setLoading(false);
-      }
-    };
-
-    fetchGanancias();
+    // Inicialmente, carga las ganancias para el mes actual
+    const currentMonth = new Date().toISOString().slice(5, 7);
+    const currentYear = new Date().getFullYear();
+    const initialMonth = `${currentMonth}-${currentYear}`;
+    setTempMonth(initialMonth);
+    setSelectedMonth(initialMonth);
+    fetchGanancias(initialMonth);
   }, []);
+
+  const fetchGanancias = async (mes) => {
+    try {
+      setLoading(true);
+      setError(null); // Limpia cualquier error anterior
+      const data = await ventasMensuales(mes);
+      setGanancias(data);
+    } catch (error) {
+      console.error("Error al obtener las ganancias: ", error);
+      setError("Error al cargar las ganancias por producto.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMonthChange = (event) => {
+    const newMonth = event.target.value;
+    setTempMonth(newMonth); // Actualiza el estado temporal del input de fecha
+  };
+
+  const handleFetchClick = () => {
+    const monthRegex = /^(0[1-9]|1[0-2])-(\d{4})$/;
+
+    if (monthRegex.test(tempMonth)) {
+      setSelectedMonth(tempMonth);
+      fetchGanancias(tempMonth);
+    } else {
+      setError("Formato de mes y año inválido. Use MM-YYYY.");
+    }
+  };
 
   if (loading) {
     return <div>Cargando...</div>;
@@ -97,6 +123,7 @@ function GananciasAdmin() {
       </text>
     );
   };
+
   const handleProductChange = (event) => {
     const options = event.target.options;
     const selectedValues = [];
@@ -108,15 +135,32 @@ function GananciasAdmin() {
     setSelectedProducts(selectedValues);
   };
 
-  const filteredGanancias = selectedProducts.length > 0
-    ? ganancias.filter((ganancia) =>
-        selectedProducts.includes(ganancia.nombre_producto)
-      )
-    : ganancias;
+  const filteredGanancias =
+    selectedProducts.length > 0
+      ? ganancias.filter((ganancia) =>
+          selectedProducts.includes(ganancia.nombre_producto)
+        )
+      : ganancias;
 
   return (
     <div className="ganancias-admin">
-      <h1>Total de Ventas Historico</h1>
+      <h1>Total de Ventas Mensuales</h1>
+
+      {/* Filtro de mes */}
+      <div className="month-filter">
+        <label htmlFor="monthInput">Selecciona Mes y Año (MM-YYYY):</label>
+        <input
+          id="monthInput"
+          type="text"
+          value={tempMonth}
+          onChange={handleMonthChange}
+          placeholder="MM-YYYY"
+          pattern="\d{2}-\d{4}"
+          title="Formato requerido: MM-YYYY"
+        />
+        <button onClick={handleFetchClick}>Buscar</button>
+      </div>
+
       <div className="chart-container">
         <ResponsiveContainer width="40%" height={400}>
           <BarChart
@@ -180,10 +224,13 @@ function GananciasAdmin() {
             multiple
             value={selectedProducts}
             onChange={handleProductChange}
-            style={{ height: '150px' }} // Para ver múltiples opciones a la vez
+            style={{ height: "150px" }} // Para ver múltiples opciones a la vez
           >
             {ganancias.map((ganancia) => (
-              <option key={ganancia.cod_producto} value={ganancia.nombre_producto}>
+              <option
+                key={ganancia.cod_producto}
+                value={ganancia.nombre_producto}
+              >
                 {ganancia.nombre_producto}
               </option>
             ))}

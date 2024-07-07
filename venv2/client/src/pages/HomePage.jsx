@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllProductos } from "../api/cerveceria_API";
 import { useCart } from "../context/CarritoContext";
-import Membresias from "../components/Membresias";
-import Contacto from "../components/Contacto";
 import Modalidad from "../components/Modalidad";
 import Bienvenida from "../components/Bienvenida";
 import Footer from "../components/Footer";
@@ -64,10 +62,6 @@ function HomePage() {
       {/* CARRUSEL */}
       {/* INFORMACION Y MODALIDAD DE VENTAS */}
       <Modalidad />
-      {/*  SECCION DE MEMBRESIAS */}
-      <Membresias />
-      {/* CONTACTO */}
-      <Contacto />
       {/* FOOTER */}
       <Footer />
     </body>

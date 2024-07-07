@@ -90,6 +90,17 @@ export const historialPedidos = async (id) => {
   }
 };
 
+export const ventasMensuales = async(mes) =>{
+  try{
+    const response = await cerveceriaAPI.get(("/ventas_mensuales/"), {
+      params: {mes: mes},
+    })
+    return response.data;
+  }catch(error)
+{
+  throw error;
+}}
+
 export const obtenerPedidosPendientes = async () => {
   try {
     const response = await cerveceriaAPI.get("/pedidos_pendientes/");

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from 'react-toastify'
 import "../css/modifiCard.css";
 
 const DEFAULT_IMAGE_URL = "https://via.placeholder.com/150?text=No+Image";
@@ -252,7 +251,6 @@ function ModificarCardProduct({ producto }) {
           </button>
         </div>
       )}
-      <ToastContainer />
     </div>
   );
 }

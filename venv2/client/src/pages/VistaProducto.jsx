@@ -88,9 +88,8 @@ function VistaProductoPage() {
   };
 
   return (
-    <div className="vista-producto">
-      <div>
-        <Navbar
+    <>
+    <Navbar
           cartItems={cartItems}
           /* removeFromCart={removeFromCart} */
           toggleCart={toggleCart}
@@ -98,11 +97,9 @@ function VistaProductoPage() {
           setShowCart={setShowCart}
         /* clearCartHandler={clearCartHandler} */
         />
-      </div>
-      <hr />
-      <hr />
-      <hr />
-      <hr />
+    <div className="vista-producto">
+    
+  
       <div className="container-title center-container">
         <h1>Detalles del Producto</h1>
         <h2>{producto.nombre_producto}</h2>
@@ -198,6 +195,9 @@ function VistaProductoPage() {
       <script src="vistaproducto.js"></script>
       <ToastContainer />
     </div>
+    </>
+
+    
   );
 }
 

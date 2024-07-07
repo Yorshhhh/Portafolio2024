@@ -2,12 +2,27 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useCart } from "../context/CarritoContext";
 import Carrito from "./Carrito";
+import UserCard from "./UserCard"; // Asegúrate de importar tus componentes
+import Ganancias from "./GananciasAdmin"; // Asegúrate de importar tus componentes
+import HistorialPedidos from "./HistorialPedidos"; // Asegúrate de importar tus componentes
 
 function Navbar() {
-  const { cartItems, removeFromCart, clearCartHandler, toggleCart, showCart, setShowCart } = useCart();
+  const {
+    cartItems,
+    removeFromCart,
+    clearCartHandler,
+    toggleCart,
+    showCart,
+    setShowCart,
+  } = useCart();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [loading, setLoading] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [showSection, setShowSection] = useState({
+    infoUser: false,
+    ganancias: false,
+    historial: false,
+  });
 
   useEffect(() => {
     const userJson = localStorage.getItem("usuario");
@@ -18,7 +33,7 @@ function Navbar() {
         console.error("Usuario no se encuentra autenticado: ", error);
       }
     }
-    setLoading(false); // Actualiza el estado de carga
+    setLoading(false);
   }, []);
 
   const history = useNavigate();
@@ -33,6 +48,13 @@ function Navbar() {
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
+  };
+
+  const toggleSection = (section) => {
+    setShowSection((prevState) => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
   };
 
   return (
@@ -95,7 +117,7 @@ function Navbar() {
                   Tienda
                 </NavLink>
                 {loading ? (
-                  <div className="loader">Cargando...</div> // Muestra un loader mientras carga
+                  <div className="loader">Cargando...</div>
                 ) : (
                   !user && (
                     <>
@@ -158,7 +180,9 @@ function Navbar() {
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
-                    <h2>Bienvenido {user.nombres} {user.apellidos}</h2>
+                    <h2>
+                      Bienvenido {user.nombres} {user.apellidos}
+                    </h2>
                     <NavLink
                       to="/perfil"
                       className="block px-4 py-2 text-sm text-gray-700"
@@ -168,7 +192,45 @@ function Navbar() {
                     >
                       Ir al perfil
                     </NavLink>
+                    <NavLink
+                      to="/pedidos"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Administrar Pedidos
+                    </NavLink>
 
+                    <NavLink
+                      to="/administrar-usuario"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Administrar Usuario
+                    </NavLink>
+
+                    <NavLink
+                      to="/administrar-productos"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Administrar Productos
+                    </NavLink>
+
+                    <NavLink
+                      to="/historial-pedidos"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Ver historial pedidos
+                    </NavLink>
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700"
@@ -216,6 +278,42 @@ function Navbar() {
           </a>
         </div>
       </div>
+
+      {user &&
+        (user.is_staff ? (
+          <div className="user-profile-staff-actions flex flex-col items-center justify-center">
+            <h1>Funciones del administrador</h1>
+            <div className="flex justify-center gap-4 mb-8"></div>
+            {showSection.infoUser && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <UserCard user={user} />
+              </div>
+            )}
+            {showSection.ganancias && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <Ganancias />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="non-staff-actions user-profile-card">
+            <h1>Funciones del usuario</h1>
+            <button
+              className="non-staff-button"
+              style={{ width: "fit-content" }}
+              onClick={() => toggleSection("historial")}
+            >
+              {showSection.historial
+                ? "Ocultar Historial de Pedidos"
+                : "Mostrar Historial de Pedidos"}
+            </button>
+            {showSection.historial && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <HistorialPedidos />
+              </div>
+            )}
+          </div>
+        ))}
     </nav>
   );
 }

@@ -4,10 +4,15 @@ from django.contrib.auth.models import Group
 from django.db.utils import OperationalError
 from django.db import connection
 from rest_framework import viewsets,status
+from django.db.utils import OperationalError
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view,action
 
+
+from .paginacion import PedidoPagination,HistorialPagination,PedidoPendientePagination,\
+    PedidoEntregadoPagination
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
@@ -158,6 +163,11 @@ class VentasProductoView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PedidoEntregadoView(APIView):
+<<<<<<< HEAD
+=======
+    pagination_class = PedidoEntregadoPagination
+
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
     def get(self, request):
         try:
             pedidos_entregados = PedidoEntregado.objects.all()
@@ -178,12 +188,65 @@ class PedidoEntregadoView(APIView):
                 }
                 for pedido in pedidos_entregados
             ]
+<<<<<<< HEAD
             return Response(pedidos_data, status=status.HTTP_200_OK)
+=======
+            # Paginar los resultados utilizando la clase de paginación personalizada
+            paginator = self.pagination_class()
+            page = paginator.paginate_queryset(pedidos_data, request)
+            return paginator.get_paginated_response(page)
+            #return Response(pedidos_data, status=status.HTTP_200_OK)
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
         except Exception as e:
             print(f"Error: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                
+<<<<<<< HEAD
+=======
+class VentasMensualesView(APIView):
+    def get(self, request):
+        month_year = request.query_params.get('mes')  # Parámetro para el mes en formato MM-YYYY
+
+        if not month_year:
+            return Response({"error": "Falta el parámetro 'mes' en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega,'MM-YYYY') AS mes_solicitado,
+                           NVL(SUM(a.precio_unitario * a.cantidad), 0) AS Total
+                    FROM cerveceria_detalle_pedido a
+                        JOIN cerveceria_producto b ON (a.cod_producto_id = b.cod_producto)
+                        JOIN cerveceria_pedido c ON (a.cod_pedido_id = c.cod_pedido)
+                    WHERE c.fecha_entrega IS NOT NULL AND TO_CHAR(c.fecha_entrega,'MM-YYYY') = %s
+                    GROUP BY b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega, 'MM-YYYY')
+                    ORDER BY b.cod_producto
+                """, [month_year])
+
+                ventas_mensuales = cursor.fetchall()
+
+                if not ventas_mensuales:
+                    return Response({"error": "No se encontraron ventas para el mes especificado."}, status=status.HTTP_404_NOT_FOUND)
+
+                ventas_data = []
+                for venta in ventas_mensuales:
+                    venta_dict = {
+                        "cod_producto": venta[0],
+                        "nombre_producto": venta[1],
+                        "mes_solicitado": venta[2],
+                        "total": venta[3],
+                    }
+                    ventas_data.append(venta_dict)
+                return Response(ventas_data, status=status.HTTP_200_OK)
+
+        except OperationalError as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
 class PedidoPendienteView(APIView):
+    pagination_class =  PedidoPendientePagination
+
     def get(self, request):
         try:
             # Obtiene todos los pedidos pendientes de la vista
@@ -206,42 +269,49 @@ class PedidoPendienteView(APIView):
                 }
                 for pedido in pedidos_pendientes
             ]
+            # Paginar los resultados utilizando la clase de paginación personalizada
+            paginator = self.pagination_class()
+            page = paginator.paginate_queryset(pedidos_data, request)
+            return paginator.get_paginated_response(page)
+        
             # Retorna la respuesta con los datos en formato JSON
-            return Response(pedidos_data, status=status.HTTP_200_OK)
+            #return Response(pedidos_data, status=status.HTTP_200_OK)
         except Exception as e:
             # Manejo de excepciones en caso de error
             print("estas aqui?")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class HistorialPedidosView(APIView):
+    pagination_class = HistorialPagination  # Especifica la clase de paginación personalizada
+
     def get(self, request):
-        user_id = request.query_params.get('id')  # Usar query_params para obtener el 'id'
+        user_id = request.query_params.get('id')
 
         if not user_id:
-            print("entonces pasas por aca?")
             return Response({"error": "Falta el parámetro ID en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
 
-        print("Usuario ID:", user_id)
-
         try:
-            # Formatear o limpiar el user_id aquí si es necesario
-            user_id = user_id.strip().replace('-', '')  # Ejemplo: remover guiones
+            user_id = user_id.strip().replace('-', '')
 
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT a.cod_pedido_id,a.id_detalle_pedido,c.cod_producto Codigo_Producto, c.nombre_producto, b.fecha_pedido, cantidad, precio_unitario, cantidad*precio_unitario total
-                    , TO_CHAR(b.fecha_entrega, 'YYYY-MM-DD') AS fecha_entrega
+                    SELECT a.cod_pedido_id, a.id_detalle_pedido, c.cod_producto AS Codigo_Producto, c.nombre_producto,
+                           TO_CHAR(b.fecha_pedido,'DD-MM-YYYY') fecha_pedido, cantidad, precio_unitario, cantidad * precio_unitario AS total,
+                           TO_CHAR(b.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega
                     FROM cerveceria_detalle_pedido a    
                     JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
                     JOIN cerveceria_producto c ON (a.cod_producto_id = c.cod_producto)
                     WHERE b.id_usuario_id = %s
                     ORDER BY a.cod_pedido_id
                 """, [user_id])
+
+                # Obtener todos los resultados de la consulta
                 pedidos = cursor.fetchall()
 
-            if not pedidos:
-                return Response({"error": "No se encontraron pedidos para el usuario especificado."}, status=status.HTTP_404_NOT_FOUND)
-
+                if not pedidos:
+                    return Response({"error": "No se encontraron pedidos para el usuario especificado."}, status=status.HTTP_404_NOT_FOUND)
+            
+            # Convertir los resultados a una lista paginable
             pedidos_data = []
             for pedido in pedidos:
                 pedido_dict = {
@@ -257,10 +327,12 @@ class HistorialPedidosView(APIView):
                 }
                 pedidos_data.append(pedido_dict)
 
-            return Response(pedidos_data, status=status.HTTP_200_OK)
+            # Paginar los resultados utilizando la clase de paginación personalizada
+            paginator = self.pagination_class()
+            page = paginator.paginate_queryset(pedidos_data, request)
+            return paginator.get_paginated_response(page)
 
         except Exception as e:
-            print("pasas por aqui entonces?")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
  
@@ -274,7 +346,30 @@ class Detalle_PedidoView(viewsets.ModelViewSet):
 
 class PedidoView(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
-    queryset = Pedido.objects.all()
+    pagination_class = PedidoPagination
+
+    def get_queryset(self):
+        id_usuario_id = self.request.query_params.get('id_usuario_id', None)
+        if id_usuario_id:
+            return Pedido.objects.filter(id_usuario_id=id_usuario_id, fecha_entrega__isnull=False)
+        return Pedido.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def confirmar(self, request, pk=None):
+        pedido = self.get_object()
+        pedido.confirmado = True
+        pedido.save()
+        return Response({'status': 'pedido confirmado'})
 
     def get_queryset(self):
         id_usuario_id = self.request.query_params.get('id_usuario_id')

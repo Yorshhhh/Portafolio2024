@@ -2,12 +2,36 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useCart } from "../context/CarritoContext";
 import Carrito from "./Carrito";
+<<<<<<< HEAD
 
 function Navbar() {
   const { cartItems, removeFromCart, clearCartHandler, toggleCart, showCart, setShowCart } = useCart();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // Estado de carga
   const [menuVisible, setMenuVisible] = useState(false);
+=======
+import UserCard from "./UserCard"; // Asegúrate de importar tus componentes
+import Ganancias from "./GananciasAdmin"; // Asegúrate de importar tus componentes
+import HistorialPedidos from "./HistorialPedidos"; // Asegúrate de importar tus componentes
+
+function Navbar() {
+  const {
+    cartItems,
+    removeFromCart,
+    clearCartHandler,
+    toggleCart,
+    showCart,
+    setShowCart,
+  } = useCart();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [showSection, setShowSection] = useState({
+    infoUser: false,
+    ganancias: false,
+    historial: false,
+  });
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
 
   useEffect(() => {
     const userJson = localStorage.getItem("usuario");
@@ -18,7 +42,11 @@ function Navbar() {
         console.error("Usuario no se encuentra autenticado: ", error);
       }
     }
+<<<<<<< HEAD
     setLoading(false); // Actualiza el estado de carga
+=======
+    setLoading(false);
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
   }, []);
 
   const history = useNavigate();
@@ -35,6 +63,16 @@ function Navbar() {
     setMenuVisible(!menuVisible);
   };
 
+<<<<<<< HEAD
+=======
+  const toggleSection = (section) => {
+    setShowSection((prevState) => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
+  };
+
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
   return (
     <nav className="bg-gray-800 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -95,7 +133,11 @@ function Navbar() {
                   Tienda
                 </NavLink>
                 {loading ? (
+<<<<<<< HEAD
                   <div className="loader">Cargando...</div> // Muestra un loader mientras carga
+=======
+                  <div className="loader">Cargando...</div>
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
                 ) : (
                   !user && (
                     <>
@@ -158,7 +200,13 @@ function Navbar() {
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
+<<<<<<< HEAD
                     <h2>Bienvenido {user.nombres} {user.apellidos}</h2>
+=======
+                    <h2>
+                      Bienvenido {user.nombres} {user.apellidos}
+                    </h2>
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
                     <NavLink
                       to="/perfil"
                       className="block px-4 py-2 text-sm text-gray-700"
@@ -168,7 +216,49 @@ function Navbar() {
                     >
                       Ir al perfil
                     </NavLink>
+<<<<<<< HEAD
 
+=======
+                    <NavLink
+                      to="/pedidos"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Administrar Pedidos
+                    </NavLink>
+
+                    <NavLink
+                      to="/administrar-usuario"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Administrar Usuario
+                    </NavLink>
+
+                    <NavLink
+                      to="/administrar-productos"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Administrar Productos
+                    </NavLink>
+
+                    <NavLink
+                      to="/historial-pedidos"
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      id="user-menu-item-0"
+                    >
+                      Ver historial pedidos
+                    </NavLink>
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700"
@@ -184,6 +274,39 @@ function Navbar() {
               </div>
             )}
           </div>
+<<<<<<< HEAD
+        </div>
+      </div>
+
+      <div className="sm:hidden" id="mobile-menu">
+        <div className="space-y-1 px-2 pb-3 pt-2">
+          <a
+            href="#"
+            className="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
+            aria-current="page"
+          >
+            Dashboard
+          </a>
+          <a
+            href="#"
+            className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            Team
+          </a>
+          <a
+            href="#"
+            className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            Projects
+          </a>
+          <a
+            href="#"
+            className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            Calendar
+          </a>
+=======
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
         </div>
       </div>
 
@@ -216,6 +339,42 @@ function Navbar() {
           </a>
         </div>
       </div>
+
+      {user &&
+        (user.is_staff ? (
+          <div className="user-profile-staff-actions flex flex-col items-center justify-center">
+            <h1>Funciones del administrador</h1>
+            <div className="flex justify-center gap-4 mb-8"></div>
+            {showSection.infoUser && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <UserCard user={user} />
+              </div>
+            )}
+            {showSection.ganancias && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <Ganancias />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="non-staff-actions user-profile-card">
+            <h1>Funciones del usuario</h1>
+            <button
+              className="non-staff-button"
+              style={{ width: "fit-content" }}
+              onClick={() => toggleSection("historial")}
+            >
+              {showSection.historial
+                ? "Ocultar Historial de Pedidos"
+                : "Mostrar Historial de Pedidos"}
+            </button>
+            {showSection.historial && (
+              <div className="m-auto h-screen w-full flex justify-center items-center">
+                <HistorialPedidos />
+              </div>
+            )}
+          </div>
+        ))}
     </nav>
   );
 }

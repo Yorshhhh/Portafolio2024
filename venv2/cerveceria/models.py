@@ -82,18 +82,6 @@ class Detalle_Pedido(models.Model):
     def __str__(self):
         return f"Detalle del pedido {self.cod_pedido} para el producto {self.cod_producto}"
 
-class HistorialPedido(models.Model):
-    codigo_producto = models.IntegerField()
-    nombre_producto = models.CharField(max_length=100)
-    cantidad = models.IntegerField()
-    precio_unitario = models.IntegerField()
-    total = models.IntegerField()
-    fecha_pedido = models.DateField()
-    fecha_entrega = models.DateField()
-
-    class Meta:
-        managed = False  # No queremos que Django intente crear esta tabla
-        db_table = 'historial_pedidos'  # Nombre de la vista en la base de datos
 
 class GananciasProducto(models.Model):
     cod_producto = models.IntegerField(primary_key=True)

@@ -90,8 +90,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'localhost:1521/xe',
+<<<<<<< HEAD
         'USER': 'jorge6',
         'PASSWORD': 'duoc',
+=======
+        'USER': 'seba8',
+        'PASSWORD':'duoc',
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
         'TEST': {
             'USER': 'default_test',
             'TBLSPACE': 'default_test_tbls',

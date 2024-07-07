@@ -19,7 +19,10 @@
     "react-hook-form": "^7.51.3",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.2.1",
+<<<<<<< HEAD
     "react-paginate": "^8.2.0",
+=======
+>>>>>>> 64f876b489f43ec6ea259ef5e77ad717bd0177d7
     "react-router-dom": "^6.23.0",
     "react-toastify": "^10.0.5",
     "recharts": "^2.12.7",

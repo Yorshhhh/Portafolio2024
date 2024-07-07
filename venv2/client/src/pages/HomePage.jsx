@@ -8,6 +8,8 @@ import Bienvenida from "../components/Bienvenida";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import CardProducts from "../components/CardProducts";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import "../css/font-awesome.min.css";
 import "../css/bootstrap.min.css";
@@ -70,6 +72,7 @@ function HomePage() {
       <Contacto />
       {/* FOOTER */}
       <Footer />
+      <ToastContainer />
     </body>
   );
 }

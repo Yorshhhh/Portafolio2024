@@ -61,7 +61,9 @@ function ProductosPage() {
         Todos los productos
       </h1>
       <div className="flex justify-start mb-4">
-        <select onChange={handleSortChange} value={sortCriteria}>
+        <select className="p-2 border border-gray-300 rounded-md bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onChange={handleSortChange}
+            value={sortCriteria}>
           <option value="default">Ordenar por...</option>
           <option value="price-asc">Precio: Menor a Mayor</option>
           <option value="price-desc">Precio: Mayor a Menor</option>

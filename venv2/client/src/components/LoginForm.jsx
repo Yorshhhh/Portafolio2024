@@ -80,12 +80,13 @@ function LoginForm() {
       padding: "10px 15px",
       border: "none",
       borderRadius: "4px",
-      background: "#000000", // Fondo negro
-      color: "#ff0000", // Letras rojas
+      background: "#f39c12", // Cambiado a naranja
+      color: "white",
       cursor: "pointer",
       textAlign: "center",
       width: "100%",
       marginTop: "10px",
+      transition: "background-color 0.3s, color 0.3s", // Añadida transición
     },
     alert: {
       marginTop: "10px",
@@ -101,12 +102,12 @@ function LoginForm() {
       <div style={styles.container}>
         <div style={styles.card}>
           <div style={styles.header}>
-            <h2>Iniciar Sesión</h2>
+            <h1>Iniciar Sesión</h1>
           </div>
           <form onSubmit={handleSubmit}>
             <div style={styles.formGroup}>
               <label style={styles.label} htmlFor="correo">
-                Usuario
+                Correo
               </label>
               <input
                 style={styles.input}
@@ -142,6 +143,9 @@ function LoginForm() {
               Entrar
             </button>
           </form>
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <NavLink to="/register">Registrate</NavLink>
+          </div>
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <NavLink to="/home">Volver al Inicio</NavLink>
           </div>

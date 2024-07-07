@@ -57,7 +57,7 @@ function ProductosPage() {
         setShowCart={setShowCart}
         clearCartHandler={clearCartHandler}
       />
-      <h1 className="text-black font-bold flex justify-center border-1 rounded-md">
+      <h1 className="text-4xl font-bold text-center mb-8">
         Todos los productos
       </h1>
       <div className="flex justify-start mb-4">

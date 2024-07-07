@@ -2,12 +2,21 @@ import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useCart } from "../context/CarritoContext";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function CardProducts({ producto }) {
-  const { addToCart } = useCart();
+  const { cartItems, addToCart } = useCart();
 
-  CardProducts.propTypes = {
-    producto: PropTypes.object,
+  const handleAddToCart = () => {
+    const existingItem = cartItems.find(item => item.cod_producto === producto.cod_producto);
+    const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+    if (currentQuantity + 1 > producto.stock_producto) {
+      toast.error(`No puedes agregar más de ${producto.stock_producto} unidades de este producto.`);
+    } else {
+      addToCart(producto, 1);
+    }
   };
 
   return (
@@ -29,12 +38,16 @@ function CardProducts({ producto }) {
           <p>Stock: {producto.stock_producto}</p>
         </div>
         <button className="w-full bg-orange-400 py-2 px-6 text-white text-lg font-bold rounded-bt-md hover:bg-orange-600"
-        onClick={() => addToCart(producto, 1)}>
+          onClick={handleAddToCart}>
           Agregar al carrito
         </button>
       </div>
     </div>
   );
 }
+
+CardProducts.propTypes = {
+  producto: PropTypes.object.isRequired,
+};
 
 export default CardProducts;

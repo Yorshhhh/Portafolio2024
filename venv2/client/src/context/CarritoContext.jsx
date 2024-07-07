@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import useLocalStorage from '../hooks/useLocalStorage'
+import { toast } from 'react-toastify'; // Importar Toast
 
 const CartContext = createContext();
 
@@ -25,6 +26,11 @@ export const CartProvider = ({ children }) => {
     );
 
     if (existingItemIndex !== -1) {
+      const updatedItem = cartItems[existingItemIndex];
+      if (updatedItem.quantity + quantity > item.stock_producto) {
+        toast.error(`No puedes agregar más de ${item.stock_producto} unidades de este producto.`);
+        return;
+      }
       const updatedCart = cartItems.map((cartItem, index) =>
         index === existingItemIndex
           ? { ...cartItem, quantity: cartItem.quantity + quantity }
@@ -33,6 +39,10 @@ export const CartProvider = ({ children }) => {
       setCartItems(updatedCart);
       localStorage.setItem("carrito", JSON.stringify(updatedCart));
     } else {
+      if (quantity > item.stock_producto) {
+        toast.error(`No puedes agregar más de ${item.stock_producto} unidades de este producto.`);
+        return;
+      }
       const updatedCart = [...cartItems, { ...item, quantity }];
       setCartItems(updatedCart);
       localStorage.setItem("carrito", JSON.stringify(updatedCart));
